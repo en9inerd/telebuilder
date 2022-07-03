@@ -1,3 +1,10 @@
+## [0.1.3](https://github.com/en9inerd/telebuilder/compare/v0.1.2...v0.1.3) (2022-07-03)
+
+
+### Bug Fixes
+
+* delete `scripts` section before publishing ([3d83876](https://github.com/en9inerd/telebuilder/commit/3d838761fb3bf05046887ac38f4a136d228756f1))
+
 ## [0.1.2](https://github.com/en9inerd/telebuilder/compare/v0.1.1...v0.1.2) (2022-07-03)
 
 
