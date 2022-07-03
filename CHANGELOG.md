@@ -1,3 +1,10 @@
+## [0.1.4](https://github.com/en9inerd/telebuilder/compare/v0.1.3...v0.1.4) (2022-07-03)
+
+
+### Bug Fixes
+
+* we don't need to encrypt bot session atm ([67c0c15](https://github.com/en9inerd/telebuilder/commit/67c0c1564572d057cf24cba4aa0ec46e34ae04dd))
+
 ## [0.1.3](https://github.com/en9inerd/telebuilder/compare/v0.1.2...v0.1.3) (2022-07-03)
 
 
