@@ -20,7 +20,7 @@ export class TelegramBotClient extends TelegramClient {
     }
   ) {
     super(
-      new StringSession(Store.get('encryptedSession', '')),
+      new StringSession(Store.get('stringSession', '')),
       config.get('botConfig.apiId'),
       config.get('botConfig.apiHash'),
       {
@@ -44,9 +44,8 @@ export class TelegramBotClient extends TelegramClient {
       botAuthToken: config.get('botConfig.token'),
     });
 
-    // todo: encrypt session by passphrase
-    if (!Store.get('encryptedSession', '')) {
-      Store.set('encryptedSession', this.session.save());
+    if (!Store.get('stringSession', '')) {
+      Store.set('stringSession', this.session.save());
     }
 
     await this.syncAndInitCommands();
