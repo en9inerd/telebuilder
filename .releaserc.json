@@ -9,8 +9,7 @@
     [
       "@semantic-release/npm",
       {
-        "pkgRoot": "dist",
-        "npmPublish": false
+        "pkgRoot": "dist"
       }
     ],
     [
