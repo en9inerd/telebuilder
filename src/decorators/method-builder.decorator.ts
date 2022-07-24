@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import StateManager from './state';
-import { isAsync } from './utils';
+import StateManager from '../states';
+import { isAsync } from '../utils';
 
 export function MethodBuilder(target: any, key: string | symbol, descriptor: PropertyDescriptor) {
   let fn = descriptor.value;
 
   if (typeof fn !== 'function') {
-    throw new TypeError(`@boundMethod decorator can only be applied to methods not: ${typeof fn}`);
+    throw new TypeError(`@MethodBuilder decorator can only be applied to methods not: ${typeof fn}`);
   }
 
   // behavior modification
@@ -16,9 +16,9 @@ export function MethodBuilder(target: any, key: string | symbol, descriptor: Pro
     const senderId = args[0]?.message?.senderId || args[0]?.senderId;
     const lockCondition = args.length === 1 && senderId;
     if (lockCondition) {
-      if (StateManager.get(senderId).get('commandLock')) return;
+      if (StateManager.get('user').get(senderId, 'commandLock')) return;
 
-      StateManager.get(senderId).set('commandLock', true);
+      StateManager.get('user').set(senderId, 'commandLock', true);
     }
 
     // execute the method
@@ -26,12 +26,12 @@ export function MethodBuilder(target: any, key: string | symbol, descriptor: Pro
     try {
       result = (isAsync) ? await descriptor.value.apply(this, args) : descriptor.value.apply(this, args);
     } catch (err) {
-      if (lockCondition) StateManager.get(senderId).set('commandLock', false);
+      if (lockCondition) StateManager.get('user').deleteStateProperty(senderId, 'commandLock');
       throw err;
     }
 
     // execute something after the method call
-    if (lockCondition) StateManager.get(senderId).set('commandLock', false);
+    if (lockCondition) StateManager.get('user').deleteStateProperty(senderId, 'commandLock');
     return result;
   };
 
@@ -60,14 +60,4 @@ export function MethodBuilder(target: any, key: string | symbol, descriptor: Pro
       fn = value;
     }
   };
-}
-
-export function ClassBuilder<T extends { new(...args: any[]): any }>(constructor: T) {
-  for (const propertyName of Object.getOwnPropertyNames(constructor.prototype)) {
-    const descriptor = Object.getOwnPropertyDescriptor(constructor.prototype, propertyName);
-    if (propertyName === 'constructor' || !descriptor || !(descriptor.value instanceof Function)) continue;
-
-    Object.defineProperty(constructor.prototype, propertyName, MethodBuilder(constructor, propertyName, descriptor));
-  }
-  return constructor;
 }

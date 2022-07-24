@@ -1,6 +1,8 @@
 import { NewMessageEvent } from 'telegram/events';
 import { CallbackQueryEvent } from 'telegram/events/CallbackQuery';
 
+export type Dictionary = Record<string, unknown>;
+
 export type GroupedCommandScopes = Record<string, Record<string, string[]>>;
 
 export type Command = {
