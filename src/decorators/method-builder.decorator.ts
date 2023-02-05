@@ -38,8 +38,7 @@ export function MethodBuilder(target: any, key: string | symbol, descriptor: Pro
   return {
     configurable: true,
     get() {
-      // eslint-disable-next-line no-prototype-builtins
-      if (this === target.prototype || this.hasOwnProperty(key) || typeof fn !== 'function') {
+      if (this === target.prototype || Object.prototype.hasOwnProperty.call(this, key) || typeof fn !== 'function') {
         return fn;
       }
 
