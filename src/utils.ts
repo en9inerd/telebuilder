@@ -90,8 +90,13 @@ export function formatErrorMessage(err: Error): string {
   return 'Error: ' + err.message.split(' (')[0];
 }
 
-export function isAsync(fn: () => void): boolean {
-  return fn.constructor.name === 'AsyncFunction';
+export function isAsync(fn: CallableFunction): boolean {
+  return (
+    fn.constructor.name === 'AsyncFunction' ||
+    Object.prototype.toString.call(fn) === '[object AsyncFunction]' ||
+    fn instanceof Promise ||
+    (fn !== null && typeof fn === 'object' && typeof (<Promise<unknown>>fn).then === 'function' && typeof (<Promise<unknown>>fn).catch === 'function')
+  );
 }
 
 export * as Utils from './utils';
