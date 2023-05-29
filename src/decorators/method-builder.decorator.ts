@@ -10,7 +10,7 @@ export function MethodBuilder(target: any, key: string | symbol, descriptor: Pro
   }
 
   // behavior modification
-  fn = async function (this: any, ...args: any[]) {
+  fn = async function (this: CallableFunction, ...args: any[]) {
 
     // execute something before the method call
     const senderId = args[0]?.message?.senderId || args[0]?.senderId;
@@ -24,7 +24,7 @@ export function MethodBuilder(target: any, key: string | symbol, descriptor: Pro
     // execute the method
     let result;
     try {
-      result = (isAsync) ? await descriptor.value.apply(this, args) : descriptor.value.apply(this, args);
+      result = (isAsync(this)) ? await descriptor.value.apply(this, args) : descriptor.value.apply(this, args);
     } catch (err) {
       if (lockCondition) StateManager.get('user').deleteStateProperty(senderId, 'commandLock');
       throw err;

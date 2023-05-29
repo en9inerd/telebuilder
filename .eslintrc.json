@@ -8,7 +8,7 @@
     "plugin:@typescript-eslint/recommended"
   ],
   "parserOptions": {
-    "ecmaVersion": 2021,
+    "ecmaVersion": 2022,
     "sourceType": "module"
   },
   "env": {
@@ -27,6 +27,7 @@
       }
     ],
     "semi": "off",
-    "@typescript-eslint/semi": "error"
+    "@typescript-eslint/semi": "error",
+    "no-constant-condition": "off"
   }
 }

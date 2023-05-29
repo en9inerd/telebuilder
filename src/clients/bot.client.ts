@@ -1,6 +1,6 @@
 import config from 'config';
 import { Api, Logger, TelegramClient } from 'telegram';
-import { DBHelper, Store } from '../helpers';
+import { Store } from '../helpers';
 import { NewMessage } from 'telegram/events';
 import type { Command, GroupedCommandScopes } from '../types';
 import { StringSession } from 'telegram/sessions';
@@ -9,10 +9,11 @@ import { Utils } from '../utils';
 import { commandScopeMap } from '../keys';
 import { CallbackQuery } from 'telegram/events/CallbackQuery';
 import { discoverCommands } from '../discovery';
+import { DBService } from '../services';
 
 export class TelegramBotClient extends TelegramClient {
-  private readonly dbHelper: DBHelper;
-  private readonly commands: Command[];
+  private readonly dbService: DBService;
+  private commands: Command[] = [];
 
   constructor(
     private readonly params?: {
@@ -33,23 +34,52 @@ export class TelegramBotClient extends TelegramClient {
         systemLangCode: config.get('botConfig.systemLangCode'),
       },
     );
-    this.commands = discoverCommands(this.logger);
-    this.dbHelper = new DBHelper(this.logger);
+    this.dbService = new DBService();
   }
 
   public async init(): Promise<void> {
-    await this.dbHelper.connect();
-
-    await this.start({
-      botAuthToken: config.get('botConfig.token'),
-    });
-
-    if (!Store.get('stringSession', '')) {
-      Store.set('stringSession', this.session.save());
+    // Register termination signal handlers
+    for (const signal of ['SIGINT', 'SIGTERM']) {
+      process.on(signal, async () => {
+        await this.handleExit(0);
+      });
     }
 
-    await this.syncAndInitCommands();
-    await this.registerEventHandlers();
+    // Register exit handler
+    process.on('exit', async (code: number) => {
+      await this.handleExit(code);
+    });
+
+    try {
+      // Initialize commands
+      this.commands = await discoverCommands();
+
+      // Connect to the database
+      await this.dbService.init();
+      this.logger.info('Database connected successfully.');
+
+      // Start the bot
+      await this.start({
+        botAuthToken: config.get('botConfig.token'),
+      });
+
+      // Save the session if it doesn't exist
+      if (!Store.get('stringSession', '')) {
+        Store.set('stringSession', this.session.save());
+      }
+
+      // Synchronize and initialize commands
+      await this.syncAndInitCommands();
+
+      // Register event handlers
+      await this.registerEventHandlers();
+
+      this.logger.info('Bot initialized successfully.');
+    } catch (error: unknown) {
+      this.logger.error(`${(<Error>error)?.name}: ${(<Error>error)?.message}`);
+      console.error(error);
+      await this.handleExit(1);
+    }
   }
 
   private async syncAndInitCommands(): Promise<void> {
@@ -134,6 +164,18 @@ export class TelegramBotClient extends TelegramClient {
       return new commandScopeMap[scope.name]({ peer: inputPeer });
     } else {
       return new commandScopeMap[scope.name]();
+    }
+  }
+
+  private async handleExit(exitCode: number): Promise<void> {
+    try {
+      await this.destroy();
+      this.logger.info('Bot cleanup completed.');
+
+      process.exit(exitCode);
+    } catch (error) {
+      this.logger.error(`${(<Error>error)?.name}: ${(<Error>error)?.message}`);
+      process.exit(1);
     }
   }
 }

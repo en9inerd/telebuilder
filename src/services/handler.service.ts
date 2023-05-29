@@ -1,17 +1,17 @@
 import { TelegramClient } from 'telegram';
-import { HandlerModel } from '../models';
-import { Handler } from '../types';
+import { Handler } from '../models/handler.model';
+import { collections } from './database.service';
 
 export class HandlerService {
   constructor(private readonly client: TelegramClient) { }
 
   public async addHandler(handler: Handler): Promise<void> {
-    HandlerModel.create(handler);
+    collections.handlers.insertOne(handler);
     return;
   }
 
   public async removeHandler(handler: Handler): Promise<void> {
-    HandlerModel.deleteOne({
+    collections.handlers.deleteOne({
       name: handler.name,
     });
     return;
