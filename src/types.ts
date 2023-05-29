@@ -1,6 +1,12 @@
 import { NewMessageEvent } from 'telegram/events';
 import { CallbackQueryEvent } from 'telegram/events/CallbackQuery';
 
+export type TSConfig = {
+  compilerOptions: {
+    outDir: string;
+  };
+};
+
 export type Dictionary = Record<string, unknown>;
 
 export type GroupedCommandScopes = Record<string, Record<string, string[]>>;
@@ -37,17 +43,3 @@ export type CommandScope =
     peer: string;
     userId: string;
   };
-
-export type Handler = {
-  name: string;
-  command: string;
-  event: {
-    name: string;
-    incoming?: boolean;
-    outgoing?: boolean;
-    chats?: string;
-    fromUsers?: string[];
-    forwards?: boolean;
-    pattern?: string;
-  };
-};
