@@ -7,7 +7,10 @@ module.exports = {
         port: process.env.MONGO_DB_PORT || 27017,
         user: process.env.MONGO_DB_USERNAME,
         password: process.env.MONGO_DB_PASSWORD,
-        maxPoolSize: process.env.MONGO_DB_MAX_POOL_SIZE || 10
+        maxPoolSize: process.env.MONGO_DB_MAX_POOL_SIZE || 10,
+        collections: {
+            handlers: process.env.HANDLERS_COLLECTION_NAME || 'handlers',
+        }
     },
     botConfig: {
         botDirInfo: process.env.TG_BOT_DIR_INFO || './botInfo',

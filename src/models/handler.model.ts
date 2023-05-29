@@ -1,23 +1,36 @@
-import { Schema, model } from 'mongoose';
-import { Handler } from '../types';
+export class Handler {
+  name!: string;
+  command!: string;
+  event!: {
+    name: string;
+    incoming?: boolean;
+    outgoing?: boolean;
+    chats?: string;
+    fromUsers?: string[];
+    forwards?: boolean;
+    pattern?: string;
+  };
+}
 
-const schema = new Schema<Handler>(
-  {
-    name: { type: String, required: true },
-    command: { type: String, required: true },
-    event: {
-      name: { type: String, required: true },
-      incoming: { type: Boolean },
-      outgoing: { type: Boolean },
-      chats: { type: [String] },
-      fromUsers: { type: [String] },
-      forwards: { type: Boolean },
-      pattern: { type: String },
+export const HandlerJSONSchema = {
+  $jsonSchema: {
+    bsonType: 'object',
+    required: ['name', 'price', 'category'],
+    additionalProperties: false,
+    properties: {
+      _id: {},
+      name: {
+        bsonType: 'string',
+        description: "'name' is required and is a string",
+      },
+      price: {
+        bsonType: 'number',
+        description: "'price' is required and is a number",
+      },
+      category: {
+        bsonType: 'string',
+        description: "'category' is required and is a string",
+      },
     },
   },
-  { timestamps: true },
-);
-
-schema.index({ command: 1, name: 1 }, { unique: true });
-
-export const HandlerModel = model<Handler>('Handler', schema);
+};
