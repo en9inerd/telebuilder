@@ -1,3 +1,13 @@
+## [0.1.5](https://github.com/en9inerd/telebuilder/compare/v0.1.4...v0.1.5) (2023-05-29)
+
+
+### Bug Fixes
+
+* add minor fixes ([2bf9996](https://github.com/en9inerd/telebuilder/commit/2bf999612f33b3478a74734e6ea1204eb460c811))
+* improve async function recognizing ([11f8331](https://github.com/en9inerd/telebuilder/commit/11f8331b399dd914d5b0f144b442e51715db9d37))
+* improve discovery stuff ([a6cfd78](https://github.com/en9inerd/telebuilder/commit/a6cfd78916e790651c7ef1f29a929868482c6583))
+* replace mongoose with mongodb lib ([86c1f54](https://github.com/en9inerd/telebuilder/commit/86c1f544263b99861c4b7fd184d335f0f2688dfb))
+
 ## [0.1.4](https://github.com/en9inerd/telebuilder/compare/v0.1.3...v0.1.4) (2022-07-03)
 
 
