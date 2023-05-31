@@ -1,3 +1,12 @@
+## [0.1.6](https://github.com/en9inerd/telebuilder/compare/v0.1.5...v0.1.6) (2023-05-31)
+
+
+### Bug Fixes
+
+* fixes ([9dec728](https://github.com/en9inerd/telebuilder/commit/9dec72857dc38c3b09b6ed256886b1a99f48847b))
+* some improvements ([19bedc8](https://github.com/en9inerd/telebuilder/commit/19bedc8cddbd85d4bfe239dad70ad1f2d237840b))
+* uncomment code ([ed5bc21](https://github.com/en9inerd/telebuilder/commit/ed5bc21410be43cee1c826661b0c3af657a4baa1))
+
 ## [0.1.5](https://github.com/en9inerd/telebuilder/compare/v0.1.4...v0.1.5) (2023-05-29)
 
 
