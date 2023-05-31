@@ -12,10 +12,10 @@ import { discoverCommands } from '../discovery';
 import { DBService } from '../services';
 
 export class TelegramBotClient extends TelegramClient {
-  private readonly dbService: DBService;
   private commands: Command[] = [];
 
   constructor(
+    private readonly dbService = new DBService(),
     private readonly params?: {
       baseLogger?: Logger;
     }
@@ -34,7 +34,6 @@ export class TelegramBotClient extends TelegramClient {
         systemLangCode: config.get('botConfig.systemLangCode'),
       },
     );
-    this.dbService = new DBService();
   }
 
   public async init(): Promise<void> {
@@ -110,13 +109,14 @@ export class TelegramBotClient extends TelegramClient {
             scope: await this.getCommandScopeInstance(scopeStr),
             langCode,
             commands: this.commands.reduce((acc: Api.BotCommand[], c) => {
-              if (commands.includes(c.command) && typeof c?.defaultHandler === 'function')
+              if (commands.includes(c.command) && typeof c?.defaultHandler === 'function') {
                 acc.push(
                   new Api.BotCommand({
                     command: c.command,
                     description: c.description,
                   }),
                 );
+              }
               return acc;
             }, []),
           }),

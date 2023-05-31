@@ -5,7 +5,6 @@ import { Handler, HandlerJSONSchema } from '../models/handler.model';
 export const collections = {} as {
   handlers: Collection<Handler>
 };
-export const ownCollections = {};
 
 export class DBService {
   private readonly connectString: string;
