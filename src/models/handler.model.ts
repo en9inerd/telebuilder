@@ -15,22 +15,10 @@ export class Handler {
 export const HandlerJSONSchema = {
   $jsonSchema: {
     bsonType: 'object',
-    required: ['name', 'price', 'category'],
+    required: [],
     additionalProperties: false,
     properties: {
       _id: {},
-      name: {
-        bsonType: 'string',
-        description: "'name' is required and is a string",
-      },
-      price: {
-        bsonType: 'number',
-        description: "'price' is required and is a number",
-      },
-      category: {
-        bsonType: 'string',
-        description: "'category' is required and is a string",
-      },
     },
   },
 };

@@ -1,6 +1,6 @@
 export class DiscoveryException extends Error {
   constructor(message: string, options?: { cause?: unknown }) {
-    super(message, options);
+    super(message);
     this.name = 'DiscoveryException';
   }
 }
