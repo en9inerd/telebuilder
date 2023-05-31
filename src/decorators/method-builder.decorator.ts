@@ -9,31 +9,30 @@ export function MethodBuilder(target: any, key: string | symbol, descriptor: Pro
     throw new TypeError(`@MethodBuilder decorator can only be applied to methods not: ${typeof fn}`);
   }
 
-  // behavior modification
-  // fn = async function (this: any, ...args: any[]) {
+  fn = async function (this: any, ...args: any[]) {
 
-  //   // execute something before the method call
-  //   const senderId = args[0]?.message?.senderId || args[0]?.senderId;
-  //   const lockCondition = args.length === 1 && senderId;
-  //   if (lockCondition) {
-  //     if (StateManager.get('user').get(senderId, 'commandLock')) return;
+    // execute something before the method call
+    const senderId = args[0]?.message?.senderId || args[0]?.senderId;
+    const lockCondition = args.length === 1 && senderId;
+    if (lockCondition) {
+      if (StateManager.get('user').get(senderId, 'commandLock')) return;
 
-  //     StateManager.get('user').set(senderId, 'commandLock', true);
-  //   }
+      StateManager.get('user').set(senderId, 'commandLock', true);
+    }
 
-  //   // execute the method
-  //   let result;
-  //   try {
-  //     result = (isAsync(descriptor.value)) ? await descriptor.value.apply(this, args) : descriptor.value.apply(this, args);
-  //   } catch (err) {
-  //     if (lockCondition) StateManager.get('user').deleteStateProperty(senderId, 'commandLock');
-  //     throw err;
-  //   }
+    // execute the method
+    let result;
+    try {
+      result = (isAsync(descriptor.value)) ? await descriptor.value.apply(this, args) : descriptor.value.apply(this, args);
+    } catch (err) {
+      if (lockCondition) StateManager.get('user').deleteStateProperty(senderId, 'commandLock');
+      throw err;
+    }
 
-  //   // execute something after the method call
-  //   if (lockCondition) StateManager.get('user').deleteStateProperty(senderId, 'commandLock');
-  //   return result;
-  // };
+    // execute something after the method call
+    if (lockCondition) StateManager.get('user').deleteStateProperty(senderId, 'commandLock');
+    return result;
+  };
 
   return {
     configurable: true,
