@@ -1,3 +1,10 @@
+## [0.1.7](https://github.com/en9inerd/telebuilder/compare/v0.1.6...v0.1.7) (2023-06-01)
+
+
+### Bug Fixes
+
+* add telegram package as peer dependency ([a54eba0](https://github.com/en9inerd/telebuilder/commit/a54eba0f2909208ab358f678466c7232c3eb9c8f))
+
 ## [0.1.6](https://github.com/en9inerd/telebuilder/compare/v0.1.5...v0.1.6) (2023-05-31)
 
 
