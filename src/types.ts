@@ -43,3 +43,5 @@ export type CommandScope =
     peer: string;
     userId: string;
   };
+
+export type StateType = 'user' | 'chat';
