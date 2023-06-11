@@ -1,3 +1,4 @@
+import { StateError } from '../exceptions';
 import { StateType } from '../types';
 import { BaseState } from './base.state';
 
@@ -9,7 +10,7 @@ class StateManager {
 
   public get(stateType: StateType): BaseState {
     if (!(stateType in this._states)) {
-      throw new Error(`Invalid state type: ${stateType}`);
+      throw new StateError(`Invalid state type: ${stateType}`);
     }
     return this._states[stateType];
   }

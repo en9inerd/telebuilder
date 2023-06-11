@@ -1,9 +1,9 @@
 import { access, readFile } from 'fs/promises';
 import { join, resolve, dirname } from 'path';
-import { Command, TSConfig } from './types';
+import { Command, ModelClass, TSConfig } from './types';
 import { sync as globSync } from 'glob';
 import { parse as parseJSON } from 'json5';
-import { DiscoveryException } from './exceptions';
+import { DiscoveryError } from './exceptions';
 
 async function getRootAppDir(): Promise<string> {
   const appDir = process.env.PWD;
@@ -35,7 +35,7 @@ async function getRootAppDir(): Promise<string> {
     return dir;
   }
 
-  throw new DiscoveryException('Cannot find root app directory');
+  throw new DiscoveryError('Cannot find root app directory');
 }
 
 async function getTSConfig(): Promise<TSConfig | void> {
@@ -54,7 +54,7 @@ async function getTSConfig(): Promise<TSConfig | void> {
 function validateCommands(commands: Command[]): void {
   for (const c of commands) {
     if (!c.command) {
-      throw new DiscoveryException(`'command' property of ${c.name} class can't be empty string or undefined`);
+      throw new DiscoveryError(`'command' property of ${c.name} class can't be empty string or undefined`);
     }
     if (!c.langCodes?.length) c.langCodes = [''];
     if (!c.scopes?.length) c.scopes = [{ name: 'Default' }];
@@ -80,7 +80,7 @@ async function discover<T>(pattern: string, instantiate = false, validator?: Cal
     const module = require(filePath);
 
     if (Object.keys(module).length !== 1) {
-      throw new DiscoveryException(`Command module '${filePath}' must have only one named export or export default`);
+      throw new DiscoveryError(`Command module '${filePath}' must have only one named export or export default`);
     }
 
     return instantiate ? new module[Object.keys(module)[0]]() : module[Object.keys(module)[0]];
@@ -92,4 +92,8 @@ async function discover<T>(pattern: string, instantiate = false, validator?: Cal
 
 export async function discoverCommands(): Promise<Command[]> {
   return await discover<Command>('**/*.command.js', true, validateCommands);
+}
+
+export async function discoverModels(): Promise<ModelClass[]> {
+  return await discover<ModelClass>('**/*.model.js');
 }

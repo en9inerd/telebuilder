@@ -9,3 +9,7 @@ export const commandScopeMap = {
   PeerAdmins: Api.BotCommandScopePeerAdmins,
   PeerUser: Api.BotCommandScopePeerUser,
 };
+
+// symbol keys
+export const callbackQueryHandlerNames = Symbol('callbackQueryHandlerNames');
+export const mongodbModels = Symbol('mongodbModels');

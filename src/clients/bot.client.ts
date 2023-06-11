@@ -6,10 +6,11 @@ import type { Command, GroupedCommandScopes } from '../types';
 import { StringSession } from 'telegram/sessions';
 import { CommandScope } from '../types';
 import { Utils } from '../utils';
-import { commandScopeMap } from '../keys';
-import { CallbackQuery } from 'telegram/events/CallbackQuery';
+import { callbackQueryHandlerNames, commandScopeMap } from '../keys';
+import { CallbackQuery, CallbackQueryEvent } from 'telegram/events/CallbackQuery';
 import { discoverCommands } from '../discovery';
 import { DBService } from '../services';
+import { TelegramClientError } from '../exceptions';
 
 export class TelegramBotClient extends TelegramClient {
   private commands: Command[] = [];
@@ -135,9 +136,10 @@ export class TelegramBotClient extends TelegramClient {
       });
       if (command?.defaultHandler) this.addEventHandler(command.defaultHandler, event);
 
-      if (command?.callbackQueryHandlers) {
-        command.callbackQueryHandlers.forEach((handler) => {
-          this.addEventHandler(handler.callback, new CallbackQuery({ pattern: handler?.pattern }));
+      if (callbackQueryHandlerNames in command) {
+        (<Set<string>>command[callbackQueryHandlerNames]).forEach((handlerName) => {
+          const pattern = new RegExp(`^${command.constructor.name}:${handlerName}(:.*)?$`, 'g');
+          this.addEventHandler((<Record<string, (event: CallbackQueryEvent) => void>><unknown>command)[handlerName], new CallbackQuery({ pattern }));
         });
       }
     }
@@ -153,7 +155,7 @@ export class TelegramBotClient extends TelegramClient {
     if (!commandScopeMap[scope?.name]) {
       const err = `Command scope '${scope?.name}' is not supported`;
       this.logger.error(err);
-      throw new Error(err);
+      throw new TelegramClientError(err);
     }
     if ('peer' in scope && 'userId' in scope) {
       const inputPeer = await this.getInputEntity(scope.peer);

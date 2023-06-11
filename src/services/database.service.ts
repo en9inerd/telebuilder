@@ -1,6 +1,8 @@
 import config from 'config';
 import { Collection, Db, MongoClient, MongoServerError } from 'mongodb';
-import { Handler, HandlerJSONSchema } from '../models/handler.model';
+import { Handler } from '../models/handler.model';
+import { discoverModels } from '../discovery';
+import { ModelClass } from '../types';
 
 export const collections = {} as {
   handlers: Collection<Handler>
@@ -8,6 +10,7 @@ export const collections = {} as {
 
 export class DBService {
   private readonly connectString: string;
+  private readonly builtInModels = <ModelClass[]>[Handler];
   public dbInstance!: Db;
 
   constructor() {
@@ -30,8 +33,7 @@ export class DBService {
     this.dbInstance = client.db();
 
     // Apply schema validation
-    await this.applySchemaValidation();
-    await this.applyOwnSchemaValidation();
+    await this.applySchemaValidations();
 
     // Initialize collections
     this.initCollections();
@@ -39,27 +41,32 @@ export class DBService {
   }
 
   private initCollections() {
-    collections.handlers = this.dbInstance.collection<Handler>(config.get('dbConfig.collections.handlers'));
+    collections.handlers = this.dbInstance.collection<Handler>(this.builtInModels[0].collectionName);
   }
 
   // Try applying the modification to the collection, if the collection doesn't exist, create it
-  private async applySchemaValidation() {
-    await this.dbInstance.command({
-      collMod: config.get('dbConfig.collections.handlers'),
-      validator: HandlerJSONSchema
-    }).catch(async (error: MongoServerError) => {
-      if (error.codeName === 'NamespaceNotFound') {
-        await this.dbInstance.createCollection(config.get('dbConfig.collections.handlers'), { validator: HandlerJSONSchema });
-      }
-    });
+  private async applySchemaValidations() {
+    const modelClasses = await discoverModels();
+    modelClasses.push(...this.builtInModels);
+
+    for (const modelClass of modelClasses) {
+      if (!modelClass.jsonSchema) continue;
+
+      await this.dbInstance.command({
+        collMod: modelClass.collectionName,
+        validator: modelClass.jsonSchema
+      }).catch(async (error: MongoServerError) => {
+        if (error.codeName === 'NamespaceNotFound') {
+          await this.dbInstance.createCollection(modelClass.collectionName, { validator: modelClass.jsonSchema });
+        } else {
+          throw error;
+        }
+      });
+    }
   }
 
   protected initOwnCollections() {
     // use this method to initialize your own collections
-    // ownCollections.yourCollection = this.dbInstance.collection<YourCollection>(config.get('dbConfig.collections.yourCollection'));
-  }
-
-  protected async applyOwnSchemaValidation() {
-    // use this method to apply schema validation to your own collections
+    // ownCollections.yourCollection = this.dbInstance.collection<YourCollection>((<ModelClass>YourCollection).collectionName);
   }
 }

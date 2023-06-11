@@ -1,6 +1,7 @@
 import { TelegramClient } from 'telegram';
 import { NewMessage, NewMessageEvent } from 'telegram/events';
-import { Command, CommandScope, CommandScopeNames, GroupedCommandScopes } from './types';
+import { Command, CommandScope, CommandScopeNames, GroupedCommandScopes, ModelClass } from './types';
+import { UtilsError } from './exceptions';
 
 export function convertScopeStrToObject(scopeStr: string): CommandScope {
   return scopeStr.split(':').reduce((map, s) => {
@@ -56,7 +57,7 @@ export async function inputSecret(
 
   if (!inputMessage) {
     await client.sendMessage(userId, { message: 'Timeout' });
-    throw new Error('inputSecret: Timeout');
+    throw new UtilsError('inputSecret: Timeout');
   }
 
   return inputMessage;
@@ -92,15 +93,15 @@ export function formatErrorMessage(err: Error): string {
 
 export function isAsync(fn: CallableFunction): boolean {
   return (
-    fn.constructor.name === 'AsyncFunction' ||
+    fn?.constructor?.name === 'AsyncFunction' ||
     Object.prototype.toString.call(fn) === '[object AsyncFunction]' ||
     fn instanceof Promise ||
     (fn !== null && typeof fn === 'object' && typeof (<Promise<unknown>>fn).then === 'function' && typeof (<Promise<unknown>>fn).catch === 'function')
   );
 }
 
-export function addS(modelClass: object): string {
-  const word = modelClass.constructor.name.toLowerCase();
+export function addS(str: string): string {
+  const word = str.toLowerCase();
   const exceptions = ['s', 'x', 'z', 'ch', 'sh'];
 
   if (exceptions.some(ex => word.endsWith(ex))) {

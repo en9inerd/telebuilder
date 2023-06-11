@@ -1,5 +1,5 @@
+import { Api } from 'telegram';
 import { NewMessageEvent } from 'telegram/events';
-import { CallbackQueryEvent } from 'telegram/events/CallbackQuery';
 
 export type TSConfig = {
   compilerOptions: {
@@ -18,14 +18,8 @@ export type Command = {
   usage: string;
   scopes: CommandScope[];
   langCodes: string[];
-  params?: { [key: string]: unknown };
-  readonly callbackQueryHandlers?: CallbackQueryHandler[];
+  params?: Dictionary;
   defaultHandler?: (event: NewMessageEvent) => Promise<void>;
-};
-
-export type CallbackQueryHandler = {
-  pattern?: RegExp;
-  callback: (event: CallbackQueryEvent) => Promise<void>;
 };
 
 export type CommandScopeNames = 'Default' | 'Users' | 'Chats' | 'ChatAdmins' | 'Peer' | 'PeerAdmins' | 'PeerUser';
@@ -45,3 +39,15 @@ export type CommandScope =
   };
 
 export type StateType = 'user' | 'chat';
+
+export type Buttons = Api.KeyboardButtonCallback[][];
+
+export type HydratedModel<T> = T & Required<ModelParams>;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type ModelClass = HydratedModel<new (...args: any[]) => any>;
+
+export type ModelParams = {
+  collectionName?: string;
+  jsonSchema?: Record<string, unknown>;
+};

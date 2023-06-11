@@ -6,10 +6,10 @@
   "types": "index.d.ts",
   "scripts": {
     "lint": "eslint .",
-    "prebuild": "tsc --build --clean && rm -rf dist",
     "build": "tsc --build",
+    "clean": "tsc --build --clean",
     "build:watch": "tsc --build --watch",
-    "postbuild": "cp -r package.json dist",
+    "postbuild": "cp -r package.json dist/",
     "test": "jest",
     "postversion": "cp -r package.json ..",
     "prepublishOnly": "npm pkg delete scripts",

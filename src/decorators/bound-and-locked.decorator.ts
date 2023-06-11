@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { DecoratorError } from '../exceptions';
 import StateManager from '../states';
 
 export function boundAndLocked<This, Args extends any[], Return>(
@@ -6,7 +8,7 @@ export function boundAndLocked<This, Args extends any[], Return>(
 ) {
   bound(target, context);
   if (context.kind !== 'method') {
-    throw new Error(`'boundAndLocked' can only decorate methods not: ${context.kind}`);
+    throw new DecoratorError(`'boundAndLocked' can only decorate methods not: ${context.kind}`);
   }
 
   async function replacementMethod(this: This, ...args: Args): Promise<void | Awaited<Return>> {
@@ -35,6 +37,9 @@ export function boundAndLocked<This, Args extends any[], Return>(
     return result;
   }
 
+  // change replacementMethod name to the original method name
+  Object.defineProperty(replacementMethod, 'name', { value: context.name });
+
   return replacementMethod;
 }
 
@@ -44,10 +49,10 @@ export function bound<This, Args extends any[], Return>(
 ) {
   const methodName = String(context.name);
   if (context.private) {
-    throw new Error(`'bound' or 'boundAndLocked' cannot decorate private properties like ${methodName}.`);
+    throw new DecoratorError(`'bound' or 'boundAndLocked' cannot decorate private properties like ${methodName}.`);
   }
 
   context.addInitializer(function (this: This) {
-    (<Record<string, unknown>>this)[methodName] = (<Record<string, CallableFunction>>this)[methodName].bind(this);
+    (<Record<string, unknown>>this)[methodName] = target.bind(this);
   });
 }
