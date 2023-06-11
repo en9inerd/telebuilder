@@ -1,3 +1,10 @@
+# [0.2.0](https://github.com/en9inerd/telebuilder/compare/v0.1.8...v0.2.0) (2023-06-11)
+
+
+### Features
+
+* add mongodb model discovery feature and some improvements ([6f64286](https://github.com/en9inerd/telebuilder/commit/6f642860a46f0c9eaec89d5f40b23df2f8d72669))
+
 ## [0.1.8](https://github.com/en9inerd/telebuilder/compare/v0.1.7...v0.1.8) (2023-06-04)
 
 
