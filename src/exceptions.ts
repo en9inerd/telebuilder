@@ -5,13 +5,6 @@ export class DecoratorError extends Error {
   }
 }
 
-export class DiscoveryError extends Error {
-  constructor(message: string, options?: { cause?: unknown }) {
-    super(message, options);
-    this.name = 'DiscoveryError';
-  }
-}
-
 export class TelegramClientError extends Error {
   constructor(message: string, options?: { cause?: unknown }) {
     super(message, options);
