@@ -1,3 +1,10 @@
+# [0.3.0](https://github.com/en9inerd/telebuilder/compare/v0.2.0...v0.3.0) (2023-07-03)
+
+
+### Features
+
+* use DI to register commands and models instead of module discovery method ([006759a](https://github.com/en9inerd/telebuilder/commit/006759a28caf6068480d3d926ec4e4d5f9dadb63))
+
 # [0.2.0](https://github.com/en9inerd/telebuilder/compare/v0.1.8...v0.2.0) (2023-06-11)
 
 
