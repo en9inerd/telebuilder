@@ -45,9 +45,17 @@ export type Buttons = Api.KeyboardButtonCallback[][];
 export type HydratedModel<T> = T & Required<ModelParams>;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type ModelClass = HydratedModel<new (...args: any[]) => any>;
+export type Constructor<T> = new (...args: any[]) => T;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type GenericModel = HydratedModel<any>;
 
 export type ModelParams = {
+  $collectionName?: string;
+  $jsonSchema?: Dictionary;
+};
+
+export type ModelDecoratorParams = {
   collectionName?: string;
-  jsonSchema?: Record<string, unknown>;
+  jsonSchema?: Dictionary;
 };

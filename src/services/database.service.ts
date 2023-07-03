@@ -1,16 +1,18 @@
 import config from 'config';
 import { Collection, Db, MongoClient, MongoServerError } from 'mongodb';
 import { Handler } from '../models/handler.model';
-import { discoverModels } from '../discovery';
-import { ModelClass } from '../types';
+import { injectable } from '../decorators';
+import { container } from '../states/container';
+import { ClassType } from '../keys';
+import { GenericModel } from '../types';
 
 export const collections = {} as {
-  handlers: Collection<Handler>
+  handlers: Collection<Handler>;
 };
 
+@injectable
 export class DBService {
   private readonly connectString: string;
-  private readonly builtInModels = <ModelClass[]>[Handler];
   public dbInstance!: Db;
 
   constructor() {
@@ -41,28 +43,31 @@ export class DBService {
   }
 
   private initCollections() {
-    collections.handlers = this.dbInstance.collection<Handler>(this.builtInModels[0].collectionName);
+    collections.handlers = this.dbInstance.collection<Handler>(this.getCollName(Handler));
   }
 
   // Try applying the modification to the collection, if the collection doesn't exist, create it
   private async applySchemaValidations() {
-    const modelClasses = await discoverModels();
-    modelClasses.push(...this.builtInModels);
+    const modelInstances = container.resolveAll<GenericModel>(ClassType.Model);
 
-    for (const modelClass of modelClasses) {
-      if (!modelClass.jsonSchema) continue;
+    for (const modelInstance of modelInstances) {
+      if (!modelInstance.$jsonSchema) continue;
 
       await this.dbInstance.command({
-        collMod: modelClass.collectionName,
-        validator: modelClass.jsonSchema
+        collMod: modelInstance.$collectionName,
+        validator: modelInstance.$jsonSchema
       }).catch(async (error: MongoServerError) => {
         if (error.codeName === 'NamespaceNotFound') {
-          await this.dbInstance.createCollection(modelClass.collectionName, { validator: modelClass.jsonSchema });
+          await this.dbInstance.createCollection(modelInstance.$collectionName, { validator: modelInstance.$jsonSchema });
         } else {
           throw error;
         }
       });
     }
+  }
+
+  protected getCollName(model: GenericModel): string {
+    return container.resolveModel<GenericModel>(model).$collectionName;
   }
 
   protected initOwnCollections() {

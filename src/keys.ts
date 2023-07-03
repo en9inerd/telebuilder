@@ -13,3 +13,9 @@ export const commandScopeMap = {
 // symbol keys
 export const callbackQueryHandlerNames = Symbol('callbackQueryHandlerNames');
 export const mongodbModels = Symbol('mongodbModels');
+
+export enum ClassType {
+  Service,
+  Command,
+  Model,
+}

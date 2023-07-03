@@ -1,6 +1,6 @@
 import { access, readFile } from 'fs/promises';
 import { join, resolve, dirname } from 'path';
-import { Command, ModelClass, TSConfig } from './types';
+import { Command, TSConfig } from './types';
 import { sync as globSync } from 'glob';
 import { parse as parseJSON } from 'json5';
 import { DiscoveryError } from './exceptions';
@@ -90,10 +90,12 @@ async function discover<T>(pattern: string, instantiate = false, validator?: Cal
   return instancesOrClasses;
 }
 
+/**
+ * @deprecated
+ * @returns {Promise<Command[]>}
+ * @description
+ * Discover commands
+ */
 export async function discoverCommands(): Promise<Command[]> {
   return await discover<Command>('**/*.command.js', true, validateCommands);
-}
-
-export async function discoverModels(): Promise<ModelClass[]> {
-  return await discover<ModelClass>('**/*.model.js');
 }

@@ -1,6 +1,6 @@
 import { TelegramClient } from 'telegram';
 import { NewMessage, NewMessageEvent } from 'telegram/events';
-import { Command, CommandScope, CommandScopeNames, GroupedCommandScopes, ModelClass } from './types';
+import { Command, CommandScope, CommandScopeNames, GroupedCommandScopes } from './types';
 import { UtilsError } from './exceptions';
 
 export function convertScopeStrToObject(scopeStr: string): CommandScope {

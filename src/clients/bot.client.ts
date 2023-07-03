@@ -2,23 +2,25 @@ import config from 'config';
 import { Api, Logger, TelegramClient } from 'telegram';
 import { Store } from '../helpers';
 import { NewMessage } from 'telegram/events';
-import type { Command, GroupedCommandScopes } from '../types';
+import type { Command, Constructor, GroupedCommandScopes } from '../types';
 import { StringSession } from 'telegram/sessions';
 import { CommandScope } from '../types';
 import { Utils } from '../utils';
-import { callbackQueryHandlerNames, commandScopeMap } from '../keys';
+import { ClassType, callbackQueryHandlerNames, commandScopeMap } from '../keys';
 import { CallbackQuery, CallbackQueryEvent } from 'telegram/events/CallbackQuery';
-import { discoverCommands } from '../discovery';
 import { DBService } from '../services';
 import { TelegramClientError } from '../exceptions';
+import { container } from '../states/container';
 
 export class TelegramBotClient extends TelegramClient {
   private commands: Command[] = [];
+  private readonly dbService: DBService;
 
   constructor(
-    private readonly dbService = new DBService(),
     private readonly params?: {
       baseLogger?: Logger;
+      commands?: Constructor<Command>[];
+      dbService?: Constructor<DBService>;
     }
   ) {
     super(
@@ -35,6 +37,16 @@ export class TelegramBotClient extends TelegramClient {
         systemLangCode: config.get('botConfig.systemLangCode'),
       },
     );
+
+    // initialize db service
+    this.dbService = container.resolve<DBService>(params?.dbService || DBService, ClassType.Service);
+
+    // initialize commands
+    if (params?.commands && params.commands.length > 0) {
+      this.commands = params.commands.map((c) => container.resolve<Command>(c, ClassType.Command));
+    } else {
+      throw new TelegramClientError('No commands provided');
+    }
   }
 
   public async init(): Promise<void> {
@@ -51,9 +63,6 @@ export class TelegramBotClient extends TelegramClient {
     });
 
     try {
-      // Initialize commands
-      this.commands = await discoverCommands();
-
       // Connect to the database
       await this.dbService.init();
       this.logger.info('Database connected successfully.');

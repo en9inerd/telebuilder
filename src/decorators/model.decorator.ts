@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { DecoratorError } from '../exceptions';
-import { ModelParams } from '../types';
+import { ClassType } from '../keys';
+import { container } from '../states/container';
+import { Constructor, ModelDecoratorParams } from '../types';
 import { addS } from '../utils';
 
-export function model<Class extends new (...args: any[]) => any>(params: ModelParams) {
+export function model<Class extends Constructor<any>>(params: ModelDecoratorParams) {
   return function (
     target: Class,
     context: ClassDecoratorContext<Class>
@@ -12,13 +14,14 @@ export function model<Class extends new (...args: any[]) => any>(params: ModelPa
       throw new DecoratorError(`'model' can only decorate classes not: ${context.kind}`);
     }
 
-    context.addInitializer(function (this: Class) {
-      Object.defineProperty(this, 'collectionName', {
-        get: () => params?.collectionName || addS(this.name),
-      });
-      Object.defineProperty(this, 'jsonSchema', {
-        get: () => params?.jsonSchema || {},
-      });
+    const instance = new target();
+    Object.defineProperty(instance, '$collectionName', {
+      get: () => params?.collectionName || addS(target.name),
     });
+    Object.defineProperty(instance, '$jsonSchema', {
+      get: () => params?.jsonSchema || {},
+    });
+
+    container.register(target, instance, ClassType.Model);
   };
 }

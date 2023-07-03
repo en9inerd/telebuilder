@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { DecoratorError } from '../exceptions';
-import StateManager from '../states';
+import { stateManager } from '../states';
 
 export function boundAndLocked<This, Args extends any[], Return>(
   target: (this: This, ...args: Args) => Return,
@@ -15,12 +15,12 @@ export function boundAndLocked<This, Args extends any[], Return>(
     const senderId = args[0]?.message?.senderId || args[0]?.senderId;
     const lockCondition = args.length === 1 && senderId;
     if (lockCondition) {
-      if (StateManager.get('user').get(senderId, 'commandLock')) {
+      if (stateManager.get('user').get(senderId, 'commandLock')) {
         await args[0]?.answer?.();
         return;
       }
 
-      StateManager.get('user').set(senderId, 'commandLock', true);
+      stateManager.get('user').set(senderId, 'commandLock', true);
     }
 
     // execute the method
@@ -28,12 +28,12 @@ export function boundAndLocked<This, Args extends any[], Return>(
     try {
       result = await target.apply(this, args);
     } catch (err) {
-      if (lockCondition) StateManager.get('user').deleteStateProperty(senderId, 'commandLock');
+      if (lockCondition) stateManager.get('user').deleteStateProperty(senderId, 'commandLock');
       throw err;
     }
 
     // execute something after the method call
-    if (lockCondition) StateManager.get('user').deleteStateProperty(senderId, 'commandLock');
+    if (lockCondition) stateManager.get('user').deleteStateProperty(senderId, 'commandLock');
     return result;
   }
 

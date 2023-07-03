@@ -20,4 +20,4 @@ class StateManager {
   }
 }
 
-export default new StateManager();
+export const stateManager = new StateManager();

@@ -1,10 +1,9 @@
-import { TelegramClient } from 'telegram';
 import { Handler } from '../models/handler.model';
 import { collections } from './database.service';
+import { injectable } from '../decorators';
 
+@injectable
 export class HandlerService {
-  constructor(private readonly client: TelegramClient) { }
-
   public async addHandler(handler: Handler): Promise<void> {
     collections.handlers.insertOne(handler);
     return;
