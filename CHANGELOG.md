@@ -1,3 +1,11 @@
+## [0.3.1](https://github.com/en9inerd/telebuilder/compare/v0.3.0...v0.3.1) (2023-07-03)
+
+
+### Bug Fixes
+
+* eliminate unused dependencies ([82f5cf0](https://github.com/en9inerd/telebuilder/commit/82f5cf03f12a7b076c264ebe5142e60130ac5f8a))
+* remove unused discovery functionality ([701d3b2](https://github.com/en9inerd/telebuilder/commit/701d3b237d4bfccde3173660890c686947995864))
+
 # [0.3.0](https://github.com/en9inerd/telebuilder/compare/v0.2.0...v0.3.0) (2023-07-03)
 
 
