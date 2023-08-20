@@ -1,4 +1,5 @@
 import { Api } from 'telegram';
+import { HandlerType } from './types';
 
 export const commandScopeMap = {
   Default: Api.BotCommandScopeDefault,
@@ -10,9 +11,21 @@ export const commandScopeMap = {
   PeerUser: Api.BotCommandScopePeerUser,
 };
 
-// symbol keys
+export const handlerKeys = {
+  callbackQuery: Symbol('callbackQueryHandlers'),
+  raw: Symbol('rawHandlers'),
+  newMessage: Symbol('newMessageHandlers'),
+  editedMessage: Symbol('editedMessageHandlers'),
+  deletedMessage: Symbol('deletedMessageHandlers'),
+  album: Symbol('albumHandlers'),
+};
+
+
+
+export const clientInstance = Symbol('clientInstance');
+export const clientInstancePropertyName = Symbol('clientInstancePropertyName');
+
 export const callbackQueryHandlerNames = Symbol('callbackQueryHandlerNames');
-export const mongodbModels = Symbol('mongodbModels');
 
 export enum ClassType {
   Service,

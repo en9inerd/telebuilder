@@ -5,7 +5,7 @@ import { container } from '../states/container';
 import { Constructor, ModelDecoratorParams } from '../types';
 import { addS } from '../utils';
 
-export function model<Class extends Constructor<any>>(params: ModelDecoratorParams) {
+export function model<Class extends Constructor<any>>(params?: ModelDecoratorParams) {
   return function (
     target: Class,
     context: ClassDecoratorContext<Class>
@@ -16,10 +16,14 @@ export function model<Class extends Constructor<any>>(params: ModelDecoratorPara
 
     const instance = new target();
     Object.defineProperty(instance, '$collectionName', {
-      get: () => params?.collectionName || addS(target.name),
+      value: params?.collectionName || addS(target.name),
+      writable: false,
+      configurable: false,
     });
     Object.defineProperty(instance, '$jsonSchema', {
-      get: () => params?.jsonSchema || {},
+      value: params?.jsonSchema || {},
+      writable: false,
+      configurable: false,
     });
 
     container.register(target, instance, ClassType.Model);

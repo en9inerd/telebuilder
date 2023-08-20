@@ -23,5 +23,6 @@ module.exports = {
         langCode: process.env.TG_BOT_LANG_CODE || 'en',
         systemLangCode: process.env.TG_BOT_SYSTEM_LANG_CODE || 'en',
         connectionRetries: parseInt(process.env.TG_BOT_CONNECTION_RETRIES) || 5,
+        profilePhotoUrl: process.env.TG_BOT_PROFILE_PHOTO_URL || null,
     }
 };

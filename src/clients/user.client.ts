@@ -1,17 +1,18 @@
 import config from 'config';
 import { TelegramClient } from 'telegram';
-import { Session } from 'telegram/sessions';
-import { Utils } from '../utils';
+import { StringSession } from 'telegram/sessions';
+import { formatErrorMessage } from '../utils';
+import { userInputHandler } from '../helpers';
 
 export class TelegramUserClient extends TelegramClient {
 
   constructor(
-    public session: Session,
+    private readonly sessionStr: string,
     private readonly userId: bigInt.BigInteger,
     private readonly botClient: TelegramClient
   ) {
     super(
-      session,
+      new StringSession(sessionStr),
       config.get('botConfig.apiId'),
       config.get('botConfig.apiHash'),
       {
@@ -30,12 +31,12 @@ export class TelegramUserClient extends TelegramClient {
     let numberOfTries = 0;
 
     await this.start({
-      phoneNumber: async () => await Utils.inputSecret(this.botClient, 'Enter your phone number:', this.userId),
-      password: async () => await Utils.inputSecret(this.botClient, 'Enter your password:', this.userId),
-      phoneCode: async () => await Utils.inputSecret(this.botClient, 'Enter the code you received:', this.userId),
+      phoneNumber: async () => await userInputHandler(this.botClient, this.userId, { message: 'Enter your phone number:' }),
+      password: async () => await userInputHandler(this.botClient, this.userId, { message: 'Enter your password:' }),
+      phoneCode: async () => await userInputHandler(this.botClient, this.userId, { message: 'Enter the code you received:' }, true, true),
       onError: async (err) => {
-        if (err.message === 'inputSecret: Timeout') throw err;
-        const errMessage = Utils.formatErrorMessage(err);
+        if (err.message === 'Timeout') throw err;
+        const errMessage = formatErrorMessage(err);
 
         await this.botClient.sendMessage(this.userId, {
           message: (numberOfTries === 2) ? errMessage + '. Maximum number of tries reached. Try again later.' : errMessage

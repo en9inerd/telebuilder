@@ -1,34 +1,36 @@
 import { Dictionary } from '../types';
 
 export class BaseState {
-  private _state: Record<string, Dictionary> = {};
+  private _state: Map<string, Dictionary> = new Map();
 
-  public get(stateId: string, key: string): unknown {
-    return this._state[stateId]?.[key];
+  public get<T>(stateId: string, key: string): T | undefined {
+    return <T>(this._state.get(stateId)?.[key]);
   }
 
   public set(stateId: string, key: string, value: unknown): void {
-    this._state[stateId] = {
-      ...this._state[stateId],
+    this._state.set(stateId, {
+      ...this._state.get(stateId),
       [key]: value
-    };
+    });
   }
 
   public has(stateId: string, key: string): boolean {
-    return this._state[stateId]?.[key] !== undefined;
+    return this._state.get(stateId)?.[key] !== undefined;
   }
 
   public deleteStateProperty(stateId: string, key: string): void {
-    if (this._state[stateId]?.[key]) {
-      delete this._state[stateId][key];
+    const state = this._state.get(stateId);
+    if (state?.[key]) {
+      delete state[key];
+      this._state.set(stateId, state);
     }
   }
 
   public clearState(stateId: string): void {
-    this._state[stateId] = {};
+    this._state.set(stateId, {});
   }
 
   public clearAll(): void {
-    this._state = {};
+    this._state = new Map();
   }
 }

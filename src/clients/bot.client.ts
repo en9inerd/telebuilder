@@ -1,19 +1,21 @@
 import config from 'config';
 import { Api, Logger, TelegramClient } from 'telegram';
 import { Store } from '../helpers';
-import { NewMessage } from 'telegram/events';
-import type { Command, Constructor, GroupedCommandScopes } from '../types';
+import { NewMessage, Raw } from 'telegram/events';
+import { Command, Constructor, ExtendedCommand, GroupedCommandScopes, HandlerTypes } from '../types';
 import { StringSession } from 'telegram/sessions';
 import { CommandScope } from '../types';
-import { Utils } from '../utils';
-import { ClassType, callbackQueryHandlerNames, commandScopeMap } from '../keys';
-import { CallbackQuery, CallbackQueryEvent } from 'telegram/events/CallbackQuery';
+import { CSHelper } from '../helpers';
+import { ClassType, commandScopeMap, handlerKeys } from '../keys';
+import { CallbackQuery, NewCallbackQueryInterface } from 'telegram/events/CallbackQuery';
 import { DBService } from '../services';
 import { TelegramClientError } from '../exceptions';
 import { container } from '../states/container';
+import { NewMessageInterface } from 'telegram/events/NewMessage';
+import { CustomFile } from 'telegram/client/uploads';
 
 export class TelegramBotClient extends TelegramClient {
-  private commands: Command[] = [];
+  private readonly commands: Command[] = [];
   private readonly dbService: DBService;
 
   constructor(
@@ -37,6 +39,7 @@ export class TelegramBotClient extends TelegramClient {
         systemLangCode: config.get('botConfig.systemLangCode'),
       },
     );
+    container.client = this;
 
     // initialize db service
     this.dbService = container.resolve<DBService>(params?.dbService || DBService, ClassType.Service);
@@ -77,6 +80,28 @@ export class TelegramBotClient extends TelegramClient {
         Store.set('stringSession', this.session.save());
       }
 
+      // upload the bot profile photo
+      if (config.get('botConfig.profilePhotoUrl')) {
+        const response = await fetch(config.get<string>('botConfig.profilePhotoUrl'));
+        const extension = response.headers.get('content-type')?.split('/')[1];
+        const buffer = Buffer.from(await response.arrayBuffer());
+        const file = new CustomFile(
+          'profile_photo.' + extension,
+          buffer.byteLength,
+          '',
+          buffer
+        );
+
+        await this.invoke(
+          new Api.photos.UploadProfilePhoto({
+            file: await this.uploadFile({
+              file,
+              workers: 1,
+            }),
+          }),
+        );
+      }
+
       // Synchronize and initialize commands
       await this.syncAndInitCommands();
 
@@ -107,7 +132,7 @@ export class TelegramBotClient extends TelegramClient {
     this.logger.info('Reset all previous command scopes');
 
     // save new command scopes
-    const groupedCommands = Utils.groupCommandsByScope(this.commands);
+    const groupedCommands = CSHelper.groupCommandsByScope(this.commands);
     Store.set('commandScopes', JSON.stringify(groupedCommands));
     this.logger.info('Saved new command scopes');
 
@@ -119,7 +144,7 @@ export class TelegramBotClient extends TelegramClient {
             scope: await this.getCommandScopeInstance(scopeStr),
             langCode,
             commands: this.commands.reduce((acc: Api.BotCommand[], c) => {
-              if (commands.includes(c.command) && typeof c?.defaultHandler === 'function') {
+              if (commands.includes(c.command) && typeof c?.entryHandler === 'function') {
                 acc.push(
                   new Api.BotCommand({
                     command: c.command,
@@ -139,19 +164,44 @@ export class TelegramBotClient extends TelegramClient {
   private async registerEventHandlers(): Promise<void> {
     // default event handlers
     for (const command of this.commands) {
-      const event = new NewMessage({
-        // command example: /start key1=value1 key2=value2 key3=value3
-        pattern: new RegExp(`/${command.command}\\s?[a-zA-Z0-9!@#$%^&*()_+\\-=\\[\\]{};':"\\|,.<>\\/? ]*`, 'g'),
-      });
-      if (command?.defaultHandler) this.addEventHandler(command.defaultHandler, event);
+      // command example: /start key1=value1 key2=value2 key3=value3
+      const commandMessagePattern = new RegExp(`/${command.command}\\s?[a-zA-Z0-9!@#$%^&*()_+\\-=\\[\\]{};':"\\|,.<>\\/? ]*`, 'g');
 
-      if (callbackQueryHandlerNames in command) {
-        (<Set<string>>command[callbackQueryHandlerNames]).forEach((handlerName) => {
-          const pattern = new RegExp(`^${command.constructor.name}:${handlerName}(:.*)?$`, 'g');
-          this.addEventHandler((<Record<string, (event: CallbackQueryEvent) => void>><unknown>command)[handlerName], new CallbackQuery({ pattern }));
-        });
+      if (command?.entryHandler) {
+        this.addEventHandler(command.entryHandler, new NewMessage({ pattern: commandMessagePattern }));
+      }
+
+      for (const [eventType, key] of Object.entries(handlerKeys)) {
+        if (!(key in command)) continue;
+
+        const eventHandlers = (<ExtendedCommand>command)[key];
+        for (const [handlerName, params] of eventHandlers.entries()) {
+          let pattern: RegExp;
+          switch (eventType) {
+            case HandlerTypes.CallbackQuery:
+              // callback query data: CommandClass:handlerName:key1=value1&key2=value2&key3=value3
+              pattern = new RegExp(`^${command.constructor.name}:${handlerName}(:.*)?$`, 'g');
+              this.addEventHandler((<ExtendedCommand>command)[handlerName], new CallbackQuery(<NewCallbackQueryInterface>{
+                pattern,
+                ...params,
+              }));
+              break;
+            case HandlerTypes.Raw:
+              this.addEventHandler((<ExtendedCommand>command)[handlerName], new Raw({}));
+              break;
+            case HandlerTypes.NewMessage:
+              this.addEventHandler((<ExtendedCommand>command)[handlerName], new NewMessage(<NewMessageInterface>{
+                pattern: commandMessagePattern,
+                ...params,
+              }));
+              break;
+            default:
+              break;
+          }
+        }
       }
     }
+
     this.logger.info('Default event handlers are registered');
 
     // custom event handlers
@@ -160,7 +210,7 @@ export class TelegramBotClient extends TelegramClient {
   }
 
   private async getCommandScopeInstance(scopeStr: string): Promise<Api.TypeBotCommandScope> {
-    const scope: CommandScope = Utils.convertScopeStrToObject(scopeStr);
+    const scope: CommandScope = CSHelper.convertScopeStrToObject(scopeStr);
     if (!commandScopeMap[scope?.name]) {
       const err = `Command scope '${scope?.name}' is not supported`;
       this.logger.error(err);

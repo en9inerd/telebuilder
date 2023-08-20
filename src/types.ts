@@ -1,28 +1,29 @@
 import { Api } from 'telegram';
 import { NewMessageEvent } from 'telegram/events';
-
-export type TSConfig = {
-  compilerOptions: {
-    outDir: string;
-  };
-};
+import { commandScopeMap, handlerKeys } from './keys';
+import { NewMessageInterface } from 'telegram/events/NewMessage';
+import { NewCallbackQueryInterface } from 'telegram/events/CallbackQuery';
+import { DefaultEventInterface } from 'telegram/events/common';
+import { EditedMessageInterface } from 'telegram/events/EditedMessage';
+import { RawInterface } from 'telegram/events/Raw';
 
 export type Dictionary = Record<string, unknown>;
 
 export type GroupedCommandScopes = Record<string, Record<string, string[]>>;
 
 export type Command = {
-  readonly name?: string; // to get class name
   readonly command: string;
   description: string;
   usage: string;
   scopes: CommandScope[];
   langCodes: string[];
-  params?: Dictionary;
-  defaultHandler?: (event: NewMessageEvent) => Promise<void>;
+  entryHandler: (event: NewMessageEvent) => Promise<void>;
 };
+export type ExtendedCommand = Command & Record<symbol, Map<string, HandlerParams>> & Record<string, CommandHandler>;
 
-export type CommandScopeNames = 'Default' | 'Users' | 'Chats' | 'ChatAdmins' | 'Peer' | 'PeerAdmins' | 'PeerUser';
+export type CommandHandler = () => Promise<void>;
+
+export type CommandScopeNames = keyof typeof commandScopeMap;
 
 export type CommandScope =
   | {
@@ -37,8 +38,6 @@ export type CommandScope =
     peer: string;
     userId: string;
   };
-
-export type StateType = 'user' | 'chat';
 
 export type Buttons = Api.KeyboardButtonCallback[][];
 
@@ -59,3 +58,15 @@ export type ModelDecoratorParams = {
   collectionName?: string;
   jsonSchema?: Dictionary;
 };
+
+export type HandlerType = keyof typeof handlerKeys;
+export enum HandlerTypes {
+  NewMessage = 'newMessage',
+  EditedMessage = 'editedMessage',
+  DeletedMessage = 'deletedMessage',
+  CallbackQuery = 'callbackQuery',
+  Album = 'album',
+  Raw = 'raw',
+}
+
+export type HandlerParams = NewMessageInterface | NewCallbackQueryInterface | DefaultEventInterface | EditedMessageInterface | RawInterface | undefined;

@@ -1,6 +1,8 @@
 import { StateError } from '../exceptions';
 import { ClassType } from '../keys';
 import { Constructor, HydratedModel } from '../types';
+import { clientInstance } from '../keys';
+import { TelegramClient } from 'telegram';
 
 class Container {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -9,6 +11,17 @@ class Container {
     [ClassType.Command, new Map()],
     [ClassType.Model, new Map()]
   ]);
+  [clientInstance]!: TelegramClient;
+
+  public set client(instance: TelegramClient) {
+    if (!this[clientInstance]) {
+      this[clientInstance] = instance;
+    }
+  }
+
+  public get client(): TelegramClient {
+    return this[clientInstance];
+  }
 
   public register<T>(classIdentifier: Constructor<T>, instance: T, type: ClassType): void {
     const classMap = this.getClassMap(type);
@@ -20,7 +33,7 @@ class Container {
 
     const instance = classMap.get(classIdentifier);
     if (!instance) {
-      throw new StateError(`Class instance not registered: ${classIdentifier.name}`);
+      throw new StateError(`Class instance is not registered: ${classIdentifier.name}`);
     }
     return instance;
   }

@@ -1,26 +1,25 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { DecoratorError } from '../exceptions';
-import { stateManager } from '../states';
+import { userState } from '../states';
 
-export function boundAndLocked<This, Args extends any[], Return>(
+export function locked<This, Args extends any[], Return>(
   target: (this: This, ...args: Args) => Return,
   context: ClassMethodDecoratorContext<This, (this: This, ...args: Args) => Return>
 ) {
-  bound(target, context);
   if (context.kind !== 'method') {
     throw new DecoratorError(`'boundAndLocked' can only decorate methods not: ${context.kind}`);
   }
 
   async function replacementMethod(this: This, ...args: Args): Promise<void | Awaited<Return>> {
-    const senderId = args[0]?.message?.senderId || args[0]?.senderId;
+    const senderId = String(args[0]?.message?.senderId || args[0]?.senderId);
     const lockCondition = args.length === 1 && senderId;
     if (lockCondition) {
-      if (stateManager.get('user').get(senderId, 'commandLock')) {
+      if (userState.get(senderId, 'commandLock')) {
         await args[0]?.answer?.();
         return;
       }
 
-      stateManager.get('user').set(senderId, 'commandLock', true);
+      userState.set(senderId, 'commandLock', true);
     }
 
     // execute the method
@@ -28,12 +27,12 @@ export function boundAndLocked<This, Args extends any[], Return>(
     try {
       result = await target.apply(this, args);
     } catch (err) {
-      if (lockCondition) stateManager.get('user').deleteStateProperty(senderId, 'commandLock');
+      if (lockCondition) userState.deleteStateProperty(senderId, 'commandLock');
       throw err;
     }
 
     // execute something after the method call
-    if (lockCondition) stateManager.get('user').deleteStateProperty(senderId, 'commandLock');
+    if (lockCondition) userState.deleteStateProperty(senderId, 'commandLock');
     return result;
   }
 

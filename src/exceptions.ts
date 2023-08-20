@@ -19,9 +19,16 @@ export class StateError extends Error {
   }
 }
 
-export class UtilsError extends Error {
+export class HelperError extends Error {
   constructor(message: string, options?: { cause?: unknown }) {
     super(message, options);
-    this.name = 'UtilsError';
+    this.name = 'HelperError';
+  }
+}
+
+export class CommandError extends Error {
+  constructor(message: string, options?: { cause?: unknown }) {
+    super(message, options);
+    this.name = 'CommandError';
   }
 }
