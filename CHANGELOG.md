@@ -1,3 +1,10 @@
+# [0.5.0](https://github.com/en9inerd/telebuilder/compare/v0.4.0...v0.5.0) (2023-08-24)
+
+
+### Features
+
+* move to ESM ([447b812](https://github.com/en9inerd/telebuilder/commit/447b81271b02b5d3c1ffdd3540d257f3dd3ebe60))
+
 # [0.4.0](https://github.com/en9inerd/telebuilder/compare/v0.3.1...v0.4.0) (2023-08-20)
 
 
