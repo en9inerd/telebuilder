@@ -1,4 +1,4 @@
-import { model } from '../decorators/model.decorator';
+import { model } from '../decorators/model.decorator.js';
 
 const jsonSchema = {
   $jsonSchema: {

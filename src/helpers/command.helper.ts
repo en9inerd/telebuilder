@@ -1,9 +1,9 @@
 import { Api, TelegramClient } from 'telegram';
-import { NewMessage, NewMessageEvent } from 'telegram/events';
-import { HelperError } from '../exceptions';
-import { SendMessageParams } from 'telegram/client/messages';
-import { userState } from '../states';
-import { formatErrorMessage } from '../utils';
+import { NewMessage, NewMessageEvent } from 'telegram/events/index.js';
+import { HelperError } from '../exceptions.js';
+import { SendMessageParams } from 'telegram/client/messages.js';
+import { userState } from '../states/index.js';
+import { formatErrorMessage } from '../utils.js';
 
 export async function userInputHandler(
   client: TelegramClient,
@@ -114,4 +114,4 @@ export function getDataFromButtonCallback(data: Buffer): {
   }
 }
 
-export * as CommandHelper from './command.helper';
+export * as CommandHelper from './command.helper.js';

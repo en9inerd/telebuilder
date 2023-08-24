@@ -26,4 +26,4 @@ export function decrypt(text: string, key: string): string {
   return decrypted.toString();
 }
 
-export * as EncryptionHelper from './encryption.helper';
+export * as EncryptionHelper from './encryption.helper.js';

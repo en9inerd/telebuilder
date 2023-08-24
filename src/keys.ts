@@ -1,5 +1,4 @@
 import { Api } from 'telegram';
-import { HandlerType } from './types';
 
 export const commandScopeMap = {
   Default: Api.BotCommandScopeDefault,

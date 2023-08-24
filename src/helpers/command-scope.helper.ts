@@ -1,4 +1,4 @@
-import { Command, CommandScope, CommandScopeNames, GroupedCommandScopes } from '../types';
+import { Command, CommandScope, CommandScopeNames, GroupedCommandScopes } from '../types.js';
 
 export function convertScopeStrToObject(scopeStr: string): CommandScope {
   return scopeStr.split(':').reduce((map, s) => {
@@ -27,4 +27,4 @@ export function groupCommandsByScope(commands: Command[]): GroupedCommandScopes 
   }, <GroupedCommandScopes>{});
 }
 
-export * as CSHelper from './command-scope.helper';
+export * as CSHelper from './command-scope.helper.js';

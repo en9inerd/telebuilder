@@ -30,4 +30,4 @@ export function* chunkify<T>(inputList: T[], num: number): Generator<T[]> {
   }
 }
 
-export * as Utils from './utils';
+export * as Utils from './utils.js';

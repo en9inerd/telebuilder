@@ -1,1 +1,1 @@
-export * from './handler.model';
+export * from './handler.model.js';

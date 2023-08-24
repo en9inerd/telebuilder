@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { DecoratorError } from '../exceptions';
-import { handlerKeys } from '../keys';
-import { HandlerParams, HandlerType } from '../types';
-import { bound, locked } from './bound-and-locked.decorator';
+import { DecoratorError } from '../exceptions.js';
+import { handlerKeys } from '../keys.js';
+import { HandlerParams, HandlerType } from '../types.js';
+import { bound, locked } from './bound-and-locked.decorator.js';
 
 export function handler<This, Args extends any[], Return>(type?: HandlerType, lock = true, params?: HandlerParams) {
   return function (

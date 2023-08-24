@@ -1,11 +1,11 @@
 import { Api } from 'telegram';
 import { NewMessageEvent } from 'telegram/events';
-import { commandScopeMap, handlerKeys } from './keys';
-import { NewMessageInterface } from 'telegram/events/NewMessage';
-import { NewCallbackQueryInterface } from 'telegram/events/CallbackQuery';
-import { DefaultEventInterface } from 'telegram/events/common';
-import { EditedMessageInterface } from 'telegram/events/EditedMessage';
-import { RawInterface } from 'telegram/events/Raw';
+import { commandScopeMap, handlerKeys } from './keys.js';
+import { NewMessageInterface } from 'telegram/events/NewMessage.js';
+import { NewCallbackQueryInterface } from 'telegram/events/CallbackQuery.js';
+import { DefaultEventInterface } from 'telegram/events/common.js';
+import { EditedMessageInterface } from 'telegram/events/EditedMessage.js';
+import { RawInterface } from 'telegram/events/Raw.js';
 
 export type Dictionary = Record<string, unknown>;
 

@@ -1,2 +1,2 @@
-export * from './handler.service';
-export * from './database.service';
+export * from './handler.service.js';
+export * from './database.service.js';

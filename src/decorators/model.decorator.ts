@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { DecoratorError } from '../exceptions';
-import { ClassType } from '../keys';
-import { container } from '../states/container';
-import { Constructor, ModelDecoratorParams } from '../types';
-import { addS } from '../utils';
+import { DecoratorError } from '../exceptions.js';
+import { ClassType } from '../keys.js';
+import { container } from '../states/container.js';
+import { Constructor, ModelDecoratorParams } from '../types.js';
+import { addS } from '../utils.js';
 
 export function model<Class extends Constructor<any>>(params?: ModelDecoratorParams) {
   return function (

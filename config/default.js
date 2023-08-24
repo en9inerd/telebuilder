@@ -1,6 +1,6 @@
 // default example
 
-module.exports = {
+export default {
     dbConfig: {
         host: process.env.MONGO_DB_HOST || 'localhost',
         name: process.env.MONGO_INITDB_DATABASE,

@@ -1,7 +1,7 @@
-import { DecoratorError } from '../exceptions';
-import { ClassType } from '../keys';
-import { container } from '../states/container';
-import { Constructor } from '../types';
+import { DecoratorError } from '../exceptions.js';
+import { ClassType } from '../keys.js';
+import { container } from '../states/container.js';
+import { Constructor } from '../types.js';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function injectable<Class extends Constructor<any>>(

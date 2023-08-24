@@ -1,2 +1,2 @@
-export * from './bot.client';
-export * from './user.client';
+export * from './bot.client.js';
+export * from './user.client.js';

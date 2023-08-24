@@ -1,6 +1,6 @@
-import { Handler } from '../models/handler.model';
-import { collections } from './database.service';
-import { injectable } from '../decorators';
+import { Handler } from '../models/handler.model.js';
+import { collections } from './database.service.js';
+import { injectable } from '../decorators/index.js';
 
 @injectable
 export class HandlerService {

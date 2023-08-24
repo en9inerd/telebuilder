@@ -1,8 +1,8 @@
-import config from 'config';
 import { TelegramClient } from 'telegram';
-import { StringSession } from 'telegram/sessions';
-import { formatErrorMessage } from '../utils';
-import { userInputHandler } from '../helpers';
+import { StringSession } from 'telegram/sessions/index.js';
+import { formatErrorMessage } from '../utils.js';
+import { userInputHandler } from '../helpers/index.js';
+import { config } from '../config.js';
 
 export class TelegramUserClient extends TelegramClient {
 

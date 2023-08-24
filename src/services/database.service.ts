@@ -1,10 +1,10 @@
-import config from 'config';
 import { Collection, Db, MongoClient, MongoServerError } from 'mongodb';
-import { Handler } from '../models/handler.model';
-import { injectable } from '../decorators';
-import { container } from '../states/container';
-import { ClassType } from '../keys';
-import { GenericModel } from '../types';
+import { Handler } from '../models/handler.model.js';
+import { injectable } from '../decorators/index.js';
+import { container } from '../states/container.js';
+import { ClassType } from '../keys.js';
+import { GenericModel } from '../types.js';
+import { config } from '../config.js';
 
 export const collections = {} as {
   handlers: Collection<Handler>;

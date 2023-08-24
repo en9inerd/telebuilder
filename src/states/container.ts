@@ -1,7 +1,6 @@
-import { StateError } from '../exceptions';
-import { ClassType } from '../keys';
-import { Constructor, HydratedModel } from '../types';
-import { clientInstance } from '../keys';
+import { StateError } from '../exceptions.js';
+import { ClassType, clientInstance } from '../keys.js';
+import { Constructor, HydratedModel } from '../types.js';
 import { TelegramClient } from 'telegram';
 
 class Container {

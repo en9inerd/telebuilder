@@ -1,4 +1,4 @@
-import { Dictionary } from '../types';
+import { Dictionary } from '../types.js';
 
 export class BaseState {
   private _state: Map<string, Dictionary> = new Map();

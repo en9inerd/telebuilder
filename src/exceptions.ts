@@ -32,3 +32,10 @@ export class CommandError extends Error {
     this.name = 'CommandError';
   }
 }
+
+export class ConfigError extends Error {
+  constructor(message: string, options?: { cause?: unknown }) {
+    super(message, options);
+    this.name = 'ConfigError';
+  }
+}

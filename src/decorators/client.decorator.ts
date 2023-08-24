@@ -1,6 +1,6 @@
 import { TelegramClient } from 'telegram';
-import { DecoratorError } from '../exceptions';
-import { clientInstancePropertyName } from '../keys';
+import { DecoratorError } from '../exceptions.js';
+import { clientInstancePropertyName } from '../keys.js';
 
 export function client<This, Return extends TelegramClient>(
   target: undefined,

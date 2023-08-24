@@ -1,6 +1,6 @@
-import { DecoratorError } from '../exceptions';
-import { handlerKeys } from '../keys';
-import { Buttons, HandlerParams } from '../types';
+import { DecoratorError } from '../exceptions.js';
+import { handlerKeys } from '../keys.js';
+import { Buttons, HandlerParams } from '../types.js';
 
 export function buttonsReg<This, Return extends Buttons>(
   target: undefined,

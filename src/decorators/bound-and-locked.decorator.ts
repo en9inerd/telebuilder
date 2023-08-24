@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { DecoratorError } from '../exceptions';
-import { userState } from '../states';
+import { DecoratorError } from '../exceptions.js';
+import { userState } from '../states/index.js';
 
 export function locked<This, Args extends any[], Return>(
   target: (this: This, ...args: Args) => Return,

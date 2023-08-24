@@ -1,22 +1,23 @@
-import config from 'config';
 import { Api, Logger, TelegramClient } from 'telegram';
-import { Store } from '../helpers';
-import { NewMessage, Raw } from 'telegram/events';
-import { Command, Constructor, ExtendedCommand, GroupedCommandScopes, HandlerTypes } from '../types';
-import { StringSession } from 'telegram/sessions';
-import { CommandScope } from '../types';
-import { CSHelper } from '../helpers';
-import { ClassType, commandScopeMap, handlerKeys } from '../keys';
-import { CallbackQuery, NewCallbackQueryInterface } from 'telegram/events/CallbackQuery';
-import { DBService } from '../services';
-import { TelegramClientError } from '../exceptions';
-import { container } from '../states/container';
-import { NewMessageInterface } from 'telegram/events/NewMessage';
-import { CustomFile } from 'telegram/client/uploads';
+import { Store } from '../helpers/store.helper.js';
+import { NewMessage, Raw } from 'telegram/events/index.js';
+import { Command, Constructor, ExtendedCommand, GroupedCommandScopes, HandlerTypes } from '../types.js';
+import { StringSession } from 'telegram/sessions/index.js';
+import { CommandScope } from '../types.js';
+import { CSHelper } from '../helpers/command-scope.helper.js';
+import { ClassType, commandScopeMap, handlerKeys } from '../keys.js';
+import { CallbackQuery, NewCallbackQueryInterface } from 'telegram/events/CallbackQuery.js';
+import { DBService } from '../services/index.js';
+import { TelegramClientError } from '../exceptions.js';
+import { container } from '../states/container.js';
+import { NewMessageInterface } from 'telegram/events/NewMessage.js';
+import { CustomFile } from 'telegram/client/uploads.js';
+import { config } from '../config.js';
 
 export class TelegramBotClient extends TelegramClient {
   private readonly commands: Command[] = [];
   private readonly dbService: DBService;
+  private isExiting = false;
 
   constructor(
     private readonly params?: {
@@ -53,16 +54,22 @@ export class TelegramBotClient extends TelegramClient {
   }
 
   public async init(): Promise<void> {
-    // Register termination signal handlers
+    // Register signal handlers
     for (const signal of ['SIGINT', 'SIGTERM']) {
       process.on(signal, async () => {
-        await this.handleExit(0);
+        if (!this.isExiting) {
+          this.isExiting = true;
+          await this.handleExit(0);
+        }
       });
     }
 
     // Register exit handler
     process.on('exit', async (code: number) => {
-      await this.handleExit(code);
+      if (!this.isExiting) {
+        this.isExiting = true;
+        await this.handleExit(code);
+      }
     });
 
     try {
@@ -232,11 +239,11 @@ export class TelegramBotClient extends TelegramClient {
     try {
       await this.destroy();
       this.logger.info('Bot cleanup completed.');
-
-      process.exit(exitCode);
     } catch (error) {
       this.logger.error(`${(<Error>error)?.name}: ${(<Error>error)?.message}`);
-      process.exit(1);
+      exitCode = 1;
+    } finally {
+      process.exit(exitCode);
     }
   }
 }

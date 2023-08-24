@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { DecoratorError } from '../exceptions';
-import { ClassType, clientInstancePropertyName } from '../keys';
-import { container } from '../states/container';
-import { Command, Constructor } from '../types';
+import { DecoratorError } from '../exceptions.js';
+import { ClassType, clientInstancePropertyName } from '../keys.js';
+import { container } from '../states/container.js';
+import { Command, Constructor } from '../types.js';
 
 export function command<Class extends Constructor<any>>(
   target: Class,
