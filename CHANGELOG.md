@@ -1,3 +1,15 @@
+# [0.6.0](https://github.com/en9inerd/telebuilder/compare/v0.5.0...v0.6.0) (2023-10-06)
+
+
+### Bug Fixes
+
+* update package-lock.json file ([c2a1dd3](https://github.com/en9inerd/telebuilder/commit/c2a1dd38251e12b379acda307d32b4021ad72721))
+
+
+### Features
+
+* another bunch of improvements ([4804939](https://github.com/en9inerd/telebuilder/commit/48049391a9e5c01ca356c723e4b07bc0fa794e2c))
+
 # [0.5.0](https://github.com/en9inerd/telebuilder/compare/v0.4.0...v0.5.0) (2023-08-24)
 
 
