@@ -21,7 +21,7 @@ export class TelegramUserClient extends TelegramClient {
         deviceModel: config.get('botConfig.deviceModel'),
         appVersion: config.get('botConfig.appVersion'),
         systemVersion: config.get('botConfig.systemVersion'),
-        langCode: config.get('botConfig.langCode'),
+        langCode: config.get('botConfig.connectionLangCode'),
         systemLangCode: config.get('botConfig.systemLangCode')
       }
     );

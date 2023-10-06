@@ -1,6 +1,6 @@
 import { DecoratorError } from '../exceptions.js';
 import { handlerKeys } from '../keys.js';
-import { Buttons, HandlerParams } from '../types.js';
+import { Buttons, ExtendedCommand } from '../types.js';
 
 export function buttonsReg<This, Return extends Buttons>(
   target: undefined,
@@ -16,8 +16,8 @@ export function buttonsReg<This, Return extends Buttons>(
     initialValue.map((row) => {
       row.map((button) => {
         const handlerName = button?.data?.toString().split(':')[0];
-        if (!(<Record<symbol, Map<string, HandlerParams>>>this)[handlerKeys.callbackQuery]?.has(handlerName)) {
-          throw new DecoratorError(`'${className}.${<string>context.name}' has a button with data '${handlerName}' that is not a callbackQueryHandler.`);
+        if (!(<ExtendedCommand>this)[handlerKeys.callbackQuery]?.has(handlerName)) {
+          throw new DecoratorError(`'${className}.${context.name.toString()}' has a button with data '${handlerName}' that is not a callbackQueryHandler.`);
         }
         button.data = Buffer.from(`${className}:${button.data}`);
         return button;

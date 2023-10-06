@@ -1,35 +1,57 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { DecoratorError } from '../exceptions.js';
 import { handlerKeys } from '../keys.js';
-import { HandlerParams, HandlerType } from '../types.js';
+import { EventInterface, ExtendedCommand, HandlerDecoratorParams, HandlerTypes } from '../types.js';
 import { bound, locked } from './bound-and-locked.decorator.js';
+import { paramsValidation } from './params-validation.js';
 
-export function handler<This, Args extends any[], Return>(type?: HandlerType, lock = true, params?: HandlerParams) {
+export function handler<This, Args extends any[], Return>(params: HandlerDecoratorParams = {}) {
   return function (
     target: (this: This, ...args: Args) => Return,
     context: ClassMethodDecoratorContext<This, (this: This, ...args: Args) => Return>
   ) {
+    const {
+      lock = true,
+      validateCommandParams = true,
+      event = {}
+    } = params;
+    let { type } = params;
+
     if (context.kind !== 'method') {
       throw new DecoratorError(`'handler' can only decorate methods not: ${context.kind}`);
     }
 
+    const methodName = context.name.toString();
+
     context.addInitializer(function (this: This) {
-      if (context.name === 'entryHandler' && !type) return;
+      if (methodName === 'entryHandler') type = HandlerTypes.NewMessage;
+
+      if (!type) {
+        throw new DecoratorError(`'handler' decorator requires a type for method: ${methodName}`);
+      }
 
       const handlerKey = (type) ? handlerKeys[type] : null;
       if (!handlerKey) {
         throw new DecoratorError(`'handler' decorator does not support type: ${type}`);
       }
 
-      if (!((<Record<symbol, Map<string, HandlerParams>>>this)[handlerKey])) {
-        (<Record<symbol, Map<string, HandlerParams>>>this)[handlerKey] = new Map<string, HandlerParams>();
+      if (!((<ExtendedCommand>this)[handlerKey])) {
+        (<ExtendedCommand>this)[handlerKey] = new Map<string, EventInterface>();
       }
 
-      (<Record<symbol, Map<string, HandlerParams>>>this)[handlerKey].set(context.name.toString(), params);
+      (<ExtendedCommand>this)[handlerKey].set(methodName, event);
     });
 
     if (lock) {
-      return bound(locked(target, context) as (this: This, ...args: Args) => Return, context);
+      if (validateCommandParams && methodName === 'entryHandler') {
+        return bound(
+          paramsValidation(
+            locked(target, context) as (this: This, ...args: Args) => Return, context
+          ) as (this: This, ...args: Args) => Return, context
+        );
+      } else {
+        return bound(locked(target, context) as (this: This, ...args: Args) => Return, context);
+      }
     } else {
       return bound(target, context);
     }

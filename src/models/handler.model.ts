@@ -1,4 +1,5 @@
 import { model } from '../decorators/model.decorator.js';
+import { HandlerType } from '../types.js';
 
 const jsonSchema = {
   $jsonSchema: {
@@ -57,12 +58,14 @@ const jsonSchema = {
 export class Handler {
   name!: string;
   command!: string;
+  type!: HandlerType;
   event!: {
-    name: string;
     incoming?: boolean;
     outgoing?: boolean;
-    chats?: string;
+    chats?: string[];
+    blacklistChats?: boolean;
     fromUsers?: string[];
+    blacklistUsers?: string[];
     forwards?: boolean;
     pattern?: string;
   };

@@ -6,3 +6,5 @@ export * from './inject.decorator.js';
 export * from './command.decorator.js';
 export * from './client.decorator.js';
 export * from './handler.decorator.js';
+export * from './params-validation.js';
+export * from './params.decorator.js';

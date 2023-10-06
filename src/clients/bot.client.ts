@@ -1,29 +1,39 @@
 import { Api, Logger, TelegramClient } from 'telegram';
 import { Store } from '../helpers/store.helper.js';
 import { NewMessage, Raw } from 'telegram/events/index.js';
-import { Command, Constructor, ExtendedCommand, GroupedCommandScopes, HandlerTypes } from '../types.js';
+import { Command, CommandHandler, Constructor, EntryHandler, EventInterface, ExtendedCommand, GroupedCommandScopes, HandlerTypes } from '../types.js';
 import { StringSession } from 'telegram/sessions/index.js';
 import { CommandScope } from '../types.js';
 import { CSHelper } from '../helpers/command-scope.helper.js';
 import { ClassType, commandScopeMap, handlerKeys } from '../keys.js';
 import { CallbackQuery, NewCallbackQueryInterface } from 'telegram/events/CallbackQuery.js';
-import { DBService } from '../services/index.js';
+import { DBService, HandlerService } from '../services/index.js';
 import { TelegramClientError } from '../exceptions.js';
 import { container } from '../states/container.js';
 import { NewMessageInterface } from 'telegram/events/NewMessage.js';
 import { CustomFile } from 'telegram/client/uploads.js';
 import { config } from '../config.js';
+import { EditedMessage, EditedMessageInterface } from 'telegram/events/EditedMessage.js';
+import { RawInterface } from 'telegram/events/Raw.js';
+import { DefaultEventInterface } from 'telegram/events/common.js';
+import { Album } from 'telegram/events/Album.js';
+import { DeletedMessage } from 'telegram/events/DeletedMessage.js';
+import { inject } from '../decorators/inject.decorator.js';
 
 export class TelegramBotClient extends TelegramClient {
   private readonly commands: Command[] = [];
   private readonly dbService: DBService;
   private isExiting = false;
 
+  @inject(HandlerService)
+  private handlerService!: HandlerService;
+
   constructor(
     private readonly params?: {
       baseLogger?: Logger;
       commands?: Constructor<Command>[];
       dbService?: Constructor<DBService>;
+      disableDBService?: boolean;
     }
   ) {
     super(
@@ -36,7 +46,7 @@ export class TelegramBotClient extends TelegramClient {
         deviceModel: config.get('botConfig.deviceModel'),
         appVersion: config.get('botConfig.appVersion'),
         systemVersion: config.get('botConfig.systemVersion'),
-        langCode: config.get('botConfig.langCode'),
+        langCode: config.get('botConfig.connectionLangCode'),
         systemLangCode: config.get('botConfig.systemLangCode'),
       },
     );
@@ -74,8 +84,10 @@ export class TelegramBotClient extends TelegramClient {
 
     try {
       // Connect to the database
-      await this.dbService.init();
-      this.logger.info('Database connected successfully.');
+      if (!this.params?.disableDBService) {
+        await this.dbService.init();
+        this.logger.info('Database connected successfully.');
+      }
 
       // Start the bot
       await this.start({
@@ -88,26 +100,10 @@ export class TelegramBotClient extends TelegramClient {
       }
 
       // upload the bot profile photo
-      if (config.get('botConfig.profilePhotoUrl')) {
-        const response = await fetch(config.get<string>('botConfig.profilePhotoUrl'));
-        const extension = response.headers.get('content-type')?.split('/')[1];
-        const buffer = Buffer.from(await response.arrayBuffer());
-        const file = new CustomFile(
-          'profile_photo.' + extension,
-          buffer.byteLength,
-          '',
-          buffer
-        );
+      await this.uploadProfilePhoto();
 
-        await this.invoke(
-          new Api.photos.UploadProfilePhoto({
-            file: await this.uploadFile({
-              file,
-              workers: 1,
-            }),
-          }),
-        );
-      }
+      // update the bot profile info
+      await this.updateProfileInfo();
 
       // Synchronize and initialize commands
       await this.syncAndInitCommands();
@@ -119,6 +115,7 @@ export class TelegramBotClient extends TelegramClient {
     } catch (error: unknown) {
       this.logger.error(`${(<Error>error)?.name}: ${(<Error>error)?.message}`);
       console.error(error);
+      this.isExiting = true;
       await this.handleExit(1);
     }
   }
@@ -169,51 +166,76 @@ export class TelegramBotClient extends TelegramClient {
   }
 
   private async registerEventHandlers(): Promise<void> {
-    // default event handlers
+    // Register default event handlers
     for (const command of this.commands) {
-      // command example: /start key1=value1 key2=value2 key3=value3
-      const commandMessagePattern = new RegExp(`/${command.command}\\s?[a-zA-Z0-9!@#$%^&*()_+\\-=\\[\\]{};':"\\|,.<>\\/? ]*`, 'g');
-
-      if (command?.entryHandler) {
-        this.addEventHandler(command.entryHandler, new NewMessage({ pattern: commandMessagePattern }));
-      }
-
       for (const [eventType, key] of Object.entries(handlerKeys)) {
         if (!(key in command)) continue;
 
         const eventHandlers = (<ExtendedCommand>command)[key];
-        for (const [handlerName, params] of eventHandlers.entries()) {
-          let pattern: RegExp;
-          switch (eventType) {
-            case HandlerTypes.CallbackQuery:
-              // callback query data: CommandClass:handlerName:key1=value1&key2=value2&key3=value3
-              pattern = new RegExp(`^${command.constructor.name}:${handlerName}(:.*)?$`, 'g');
-              this.addEventHandler((<ExtendedCommand>command)[handlerName], new CallbackQuery(<NewCallbackQueryInterface>{
-                pattern,
-                ...params,
-              }));
-              break;
-            case HandlerTypes.Raw:
-              this.addEventHandler((<ExtendedCommand>command)[handlerName], new Raw({}));
-              break;
-            case HandlerTypes.NewMessage:
-              this.addEventHandler((<ExtendedCommand>command)[handlerName], new NewMessage(<NewMessageInterface>{
-                pattern: commandMessagePattern,
-                ...params,
-              }));
-              break;
-            default:
-              break;
+        for (const [handlerName, eventParams] of eventHandlers.entries()) {
+          if (handlerName === 'entryHandler') {
+            // command example: /start key1=value1 key2=value2 key3=value3
+            const commandMessagePattern = new RegExp(`/${command.command}\\s?[a-zA-Z0-9!@#$%^&*()_+\\-=\\[\\]{};':"\\|,.<>\\/? ]*`, 'g');
+            (<NewMessageInterface>eventParams).pattern = commandMessagePattern;
           }
+
+          if (eventType === HandlerTypes.CallbackQuery && !(<NewCallbackQueryInterface>eventParams)?.pattern) {
+            // callback query data: commandClassName:handlerName:key1=value1&key2=value2&key3=value3
+            const pattern = new RegExp(`^${command.constructor.name}:${handlerName}(:.*)?$`, 'g');
+            (<NewCallbackQueryInterface>eventParams).pattern = pattern;
+          }
+
+          this.registerEventHandler((<ExtendedCommand>command)[handlerName], eventType, eventParams);
         }
       }
     }
-
     this.logger.info('Default event handlers are registered');
 
-    // custom event handlers
-    // they should be taken from database here
+    if (this.params?.disableDBService) return;
+
+    // Register custom event handlers
+    const customEventHandlers = await this.handlerService.getAllHandlers();
+    for (const handler of customEventHandlers) {
+      const command = this.commands.find((c) => c.command === handler.command);
+      if (!command) {
+        this.logger.error(`Command '${handler.command}' is not registered`);
+        continue;
+      }
+
+      if (handler.type === HandlerTypes.CallbackQuery && !handler.event.pattern) {
+        // callback query data: commandClassName:handlerName:key1=value1&key2=value2&key3=value3
+        const pattern = new RegExp(`^${command.constructor.name}:${handler.name}(:.*)?$`, 'g');
+        (<NewCallbackQueryInterface>handler.event).pattern = pattern;
+      }
+
+      this.registerEventHandler((<ExtendedCommand>command)[handler.name], handler.type, handler.event);
+    }
     this.logger.info('Custom event handlers are registered');
+  }
+
+  private registerEventHandler(handlerFunction: CommandHandler | EntryHandler, eventType: string, eventParams: EventInterface): void {
+    switch (eventType) {
+      case HandlerTypes.CallbackQuery:
+        this.addEventHandler(handlerFunction, new CallbackQuery(<NewCallbackQueryInterface>eventParams));
+        break;
+      case HandlerTypes.NewMessage:
+        this.addEventHandler(handlerFunction, new NewMessage(<NewMessageInterface>eventParams));
+        break;
+      case HandlerTypes.Raw:
+        this.addEventHandler(handlerFunction, new Raw(<RawInterface>eventParams));
+        break;
+      case HandlerTypes.EditedMessage:
+        this.addEventHandler(handlerFunction, new EditedMessage(<EditedMessageInterface>eventParams));
+        break;
+      case HandlerTypes.Album:
+        this.addEventHandler(handlerFunction, new Album(<DefaultEventInterface>eventParams));
+        break;
+      case HandlerTypes.DeletedMessage:
+        this.addEventHandler(handlerFunction, new DeletedMessage(<DefaultEventInterface>eventParams));
+        break;
+      default:
+        break;
+    }
   }
 
   private async getCommandScopeInstance(scopeStr: string): Promise<Api.TypeBotCommandScope> {
@@ -232,6 +254,58 @@ export class TelegramBotClient extends TelegramClient {
       return new commandScopeMap[scope.name]({ peer: inputPeer });
     } else {
       return new commandScopeMap[scope.name]();
+    }
+  }
+
+  private async uploadProfilePhoto(): Promise<void> {
+    const profilePhotoUrl = config.get<string>('botConfig.profilePhotoUrl');
+    if (profilePhotoUrl) {
+      const response = await fetch(profilePhotoUrl);
+      const extension = response.headers.get('content-type')?.split('/')[1];
+      const buffer = Buffer.from(await response.arrayBuffer());
+      const file = new CustomFile(
+        'profile_photo.' + extension,
+        buffer.byteLength,
+        '',
+        buffer
+      );
+
+      await this.invoke(
+        new Api.photos.UploadProfilePhoto({
+          file: await this.uploadFile({
+            file,
+            workers: 1,
+          }),
+        }),
+      );
+    }
+  }
+
+  private async updateProfileInfo(): Promise<void> {
+    const name = config.get<string>('botConfig.name');
+    const about = config.get<string>('botConfig.about');
+    const description = config.get<string>('botConfig.description');
+    const langCode = config.get<string>('botConfig.botInfoLangCode');
+
+    const botInfo = await this.invoke(
+      new Api.bots.GetBotInfo({
+        langCode
+      }),
+    );
+
+    if (botInfo?.description !== description ||
+      botInfo?.about !== about ||
+      botInfo?.name !== name
+    ) {
+      console.log(botInfo);
+      await this.invoke(
+        new Api.bots.SetBotInfo({
+          description,
+          about,
+          name,
+          langCode
+        }),
+      );
     }
   }
 

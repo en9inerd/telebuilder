@@ -19,12 +19,12 @@ export const handlerKeys = {
   album: Symbol('albumHandlers'),
 };
 
-
+export const configInstance = Symbol('configInstance');
 
 export const clientInstance = Symbol('clientInstance');
-export const clientInstancePropertyName = Symbol('clientInstancePropertyName');
+export const clientInstanceFieldName = Symbol('clientInstanceFieldName');
 
-export const callbackQueryHandlerNames = Symbol('callbackQueryHandlerNames');
+export const commandParamsSchema = Symbol('commandParamsSchema');
 
 export enum ClassType {
   Service,

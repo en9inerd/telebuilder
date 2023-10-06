@@ -7,7 +7,7 @@ export function locked<This, Args extends any[], Return>(
   context: ClassMethodDecoratorContext<This, (this: This, ...args: Args) => Return>
 ) {
   if (context.kind !== 'method') {
-    throw new DecoratorError(`'boundAndLocked' can only decorate methods not: ${context.kind}`);
+    throw new DecoratorError(`'locked' can only decorate methods not: ${context.kind}`);
   }
 
   async function replacementMethod(this: This, ...args: Args): Promise<void | Awaited<Return>> {
@@ -37,7 +37,7 @@ export function locked<This, Args extends any[], Return>(
   }
 
   // change replacementMethod name to the original method name
-  Object.defineProperty(replacementMethod, 'name', { value: context.name });
+  Object.defineProperty(replacementMethod, 'name', { value: context.name.toString() });
 
   return replacementMethod;
 }
@@ -46,9 +46,10 @@ export function bound<This, Args extends any[], Return>(
   target: (this: This, ...args: Args) => Return,
   context: ClassMethodDecoratorContext<This, (this: This, ...args: Args) => Return>
 ) {
-  const methodName = String(context.name);
+  const methodName = context.name.toString();
+
   if (context.private) {
-    throw new DecoratorError(`'bound' or 'boundAndLocked' cannot decorate private properties like ${methodName}.`);
+    throw new DecoratorError(`'bound' cannot decorate private properties like ${methodName}.`);
   }
 
   context.addInitializer(function (this: This) {

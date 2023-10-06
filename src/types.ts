@@ -7,21 +7,36 @@ import { DefaultEventInterface } from 'telegram/events/common.js';
 import { EditedMessageInterface } from 'telegram/events/EditedMessage.js';
 import { RawInterface } from 'telegram/events/Raw.js';
 
-export type Dictionary = Record<string, unknown>;
+export type Dictionary<T = unknown> = Record<string, T>;
 
 export type GroupedCommandScopes = Record<string, Record<string, string[]>>;
 
 export type Command = {
   readonly command: string;
   description: string;
-  usage: string;
   scopes: CommandScope[];
   langCodes: string[];
-  entryHandler: (event: NewMessageEvent) => Promise<void>;
+  params?: CommandParamsSchema;
+  entryHandler: EntryHandler;
 };
-export type ExtendedCommand = Command & Record<symbol, Map<string, HandlerParams>> & Record<string, CommandHandler>;
+
+export type ParamSchema = {
+  type: 'string' | 'number' | 'boolean';
+  required?: boolean;
+  default?: string | number | boolean
+};
+
+export type CommandParamsSchema = Dictionary<ParamSchema>;
+
+export type ValidatedCommandParams = Dictionary<string | number | boolean>;
+
+export type ExtendedMessage = Api.Message & { params?: ValidatedCommandParams };
+
+export type ExtendedCommand = Command & Record<symbol, Map<string, EventInterface>> & Record<string, CommandHandler>;
 
 export type CommandHandler = () => Promise<void>;
+
+export type EntryHandler = (event: NewMessageEvent) => Promise<void>;
 
 export type CommandScopeNames = keyof typeof commandScopeMap;
 
@@ -69,4 +84,27 @@ export enum HandlerTypes {
   Raw = 'raw',
 }
 
-export type HandlerParams = NewMessageInterface | NewCallbackQueryInterface | DefaultEventInterface | EditedMessageInterface | RawInterface | undefined;
+export type HandlerDecoratorParams = {
+  type?: HandlerType;
+  lock?: boolean;
+  validateCommandParams?: boolean;
+  event?: EventInterface;
+};
+
+export type EventInterface = NewMessageInterface | NewCallbackQueryInterface | DefaultEventInterface | EditedMessageInterface | RawInterface;
+
+export type Handler = {
+  name: string;
+  command: string;
+  type: HandlerType;
+  event: {
+    incoming?: boolean;
+    outgoing?: boolean;
+    chats?: Array<string | bigInt.BigInteger>;
+    blacklistChats?: boolean;
+    fromUsers?: Array<string | bigInt.BigInteger>;
+    blacklistUsers?: Array<string | bigInt.BigInteger>;
+    forwards?: boolean;
+    pattern?: string | RegExp;
+  };
+};

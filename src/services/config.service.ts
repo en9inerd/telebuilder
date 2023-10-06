@@ -2,6 +2,7 @@ import { access } from 'fs/promises';
 import { fileURLToPath } from 'url';
 import { join, dirname } from 'path';
 import { ConfigError } from '../exceptions.js';
+import { configInstance } from '../keys.js';
 
 export class ConfigService {
   private rootAppDir = '';
@@ -10,15 +11,15 @@ export class ConfigService {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private config: any = {};
   private isConfigLoaded = false;
-  private static _instance: ConfigService;
+  private static [configInstance]: ConfigService;
 
   public static get instance(): Promise<ConfigService> {
     return (async () => {
-      if (!this._instance) {
-        this._instance = new ConfigService();
-        await this._instance.init();
+      if (!this[configInstance]) {
+        this[configInstance] = new ConfigService();
+        await this[configInstance].init();
       }
-      return this._instance;
+      return this[configInstance];
     }
     )();
   }

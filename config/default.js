@@ -20,9 +20,15 @@ export default {
         deviceModel: process.env.TG_BOT_DEVICE_MODEL || 'BotServer',
         appVersion: process.env.TG_BOT_APP_VERSION || '0.1',
         systemVersion: process.env.TG_BOT_SYSTEM_VERSION || '1.0',
-        langCode: process.env.TG_BOT_LANG_CODE || 'en',
+        connectionLangCode: process.env.TG_BOT_CONNECTION_LANG_CODE || 'en',
         systemLangCode: process.env.TG_BOT_SYSTEM_LANG_CODE || 'en',
         connectionRetries: parseInt(process.env.TG_BOT_CONNECTION_RETRIES) || 5,
+
+        // Bot info
         profilePhotoUrl: process.env.TG_BOT_PROFILE_PHOTO_URL || null,
+        name: process.env.TG_BOT_NAME || 'TeleBuilder Bot',
+        about: process.env.TG_BOT_ABOUT || 'TeleBuilder Bot about',
+        description: process.env.TG_BOT_DESCRIPTION || 'TeleBuilder Bot description',
+        botInfoLangCode: process.env.TG_BOT_INFO_LANG_CODE || '',
     }
 };

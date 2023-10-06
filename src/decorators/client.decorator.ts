@@ -1,6 +1,6 @@
 import { TelegramClient } from 'telegram';
 import { DecoratorError } from '../exceptions.js';
-import { clientInstancePropertyName } from '../keys.js';
+import { clientInstanceFieldName } from '../keys.js';
 
 export function client<This, Return extends TelegramClient>(
   target: undefined,
@@ -11,8 +11,8 @@ export function client<This, Return extends TelegramClient>(
   }
 
   context.addInitializer(function (this: This) {
-    if (!(<Record<symbol, string>>this)[clientInstancePropertyName]) {
-      (<Record<symbol, string>>this)[clientInstancePropertyName] = context.name.toString();
+    if (!(<Record<symbol, string>>this)[clientInstanceFieldName]) {
+      (<Record<symbol, string>>this)[clientInstanceFieldName] = context.name.toString();
     } else {
       throw new DecoratorError(`'client' can only decorate one field`);
     }
