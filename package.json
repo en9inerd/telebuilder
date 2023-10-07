@@ -70,10 +70,8 @@
   "homepage": "https://github.com/en9inerd/telebuilder#readme",
   "dependencies": {
     "big-integer": "^1.6.51",
-    "mongodb": "^6.1.0",
     "node-localstorage": "^3.0.5",
-    "store2": "^2.14.2",
-    "telegram": "^2.19.6"
+    "store2": "^2.14.2"
   },
   "peerDependencies": {
     "telegram": "^2.19.6",
