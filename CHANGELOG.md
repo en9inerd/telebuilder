@@ -1,3 +1,11 @@
+## [0.6.1](https://github.com/en9inerd/telebuilder/compare/v0.6.0...v0.6.1) (2023-10-07)
+
+
+### Bug Fixes
+
+* gramjs and mongodb as peer dependencies ([07a603c](https://github.com/en9inerd/telebuilder/commit/07a603cb35d9dbc7eead990b791d9f0e4bfd5242))
+* update readme file ([db36410](https://github.com/en9inerd/telebuilder/commit/db36410a04716dce228a97c7cc5b1d18ca427f8a))
+
 # [0.6.0](https://github.com/en9inerd/telebuilder/compare/v0.5.0...v0.6.0) (2023-10-06)
 
 
