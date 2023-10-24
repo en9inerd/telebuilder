@@ -38,14 +38,20 @@ export function paramsValidation<This, Args extends any[], Return>(
             acc[key] = parsedParams[key];
           } else if (value.type === 'number') {
             acc[key] = Number(parsedParams[key]);
-            errorMsg += Number.isNaN(acc[key]) ? `Param ${key} should be a number.\n` : '';
+            errorMsg += Number.isNaN(acc[key]) ? `Param '${key}' should be a number.\n` : '';
           } else if (value.type === 'boolean') {
             if (parsedParams[key] === 'true') {
               acc[key] = true;
             } else if (parsedParams[key] === 'false') {
               acc[key] = false;
             } else {
-              errorMsg += `Param ${key} should be a boolean: true or false.\n`;
+              errorMsg += `Param '${key}' should be a boolean: true or false.\n`;
+            }
+          } else if (value.type === 'enum') {
+            if (value.enumValues?.includes(parsedParams[key])) {
+              acc[key] = parsedParams[key];
+            } else {
+              errorMsg += `Param '${key}' should be one of: ${value.enumValues?.join(', ')}.\n`;
             }
           }
         } else if (value.default) {

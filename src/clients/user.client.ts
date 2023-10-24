@@ -1,15 +1,15 @@
 import { TelegramClient } from 'telegram';
 import { StringSession } from 'telegram/sessions/index.js';
-import { formatErrorMessage } from '../utils.js';
-import { userInputHandler } from '../helpers/index.js';
 import { config } from '../config.js';
+import { userInputHandler } from '../helpers/index.js';
+import { getClient } from '../states/index.js';
+import { formatErrorMessage } from '../utils.js';
 
 export class TelegramUserClient extends TelegramClient {
-
   constructor(
     private readonly sessionStr: string,
     private readonly userId: bigInt.BigInteger,
-    private readonly botClient: TelegramClient
+    private readonly botClient = getClient()
   ) {
     super(
       new StringSession(sessionStr),
@@ -31,9 +31,9 @@ export class TelegramUserClient extends TelegramClient {
     let numberOfTries = 0;
 
     await this.start({
-      phoneNumber: async () => await userInputHandler(this.botClient, this.userId, { message: 'Enter your phone number:' }),
-      password: async () => await userInputHandler(this.botClient, this.userId, { message: 'Enter your password:' }),
-      phoneCode: async () => await userInputHandler(this.botClient, this.userId, { message: 'Enter the code you received:' }, true, true),
+      phoneNumber: async () => await userInputHandler(this.userId, { message: 'Enter your phone number:' }),
+      password: async () => await userInputHandler(this.userId, { message: 'Enter your password:' }),
+      phoneCode: async () => await userInputHandler(this.userId, { message: 'Enter the code you received:' }, true, true),
       onError: async (err) => {
         if (err.message === 'Timeout') throw err;
         const errMessage = formatErrorMessage(err);

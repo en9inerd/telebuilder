@@ -20,10 +20,12 @@ export type Command = {
   entryHandler: EntryHandler;
 };
 
+export type ParamType = 'string' | 'number' | 'boolean' | 'enum';
 export type ParamSchema = {
-  type: 'string' | 'number' | 'boolean';
+  type: ParamType;
+  enumValues?: string[];
   required?: boolean;
-  default?: string | number | boolean
+  default?: string | number | boolean;
 };
 
 export type CommandParamsSchema = Dictionary<ParamSchema>;

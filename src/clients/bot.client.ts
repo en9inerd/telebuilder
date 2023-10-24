@@ -1,24 +1,23 @@
 import { Api, Logger, TelegramClient } from 'telegram';
-import { Store } from '../helpers/store.helper.js';
-import { NewMessage, Raw } from 'telegram/events/index.js';
-import { Command, CommandHandler, Constructor, EntryHandler, EventInterface, ExtendedCommand, GroupedCommandScopes, HandlerTypes } from '../types.js';
-import { StringSession } from 'telegram/sessions/index.js';
-import { CommandScope } from '../types.js';
-import { CSHelper } from '../helpers/command-scope.helper.js';
-import { ClassType, commandScopeMap, handlerKeys } from '../keys.js';
-import { CallbackQuery, NewCallbackQueryInterface } from 'telegram/events/CallbackQuery.js';
-import { DBService, HandlerService } from '../services/index.js';
-import { TelegramClientError } from '../exceptions.js';
-import { container } from '../states/container.js';
-import { NewMessageInterface } from 'telegram/events/NewMessage.js';
 import { CustomFile } from 'telegram/client/uploads.js';
-import { config } from '../config.js';
+import { Album } from 'telegram/events/Album.js';
+import { CallbackQuery, NewCallbackQueryInterface } from 'telegram/events/CallbackQuery.js';
+import { DeletedMessage } from 'telegram/events/DeletedMessage.js';
 import { EditedMessage, EditedMessageInterface } from 'telegram/events/EditedMessage.js';
+import { NewMessageInterface } from 'telegram/events/NewMessage.js';
 import { RawInterface } from 'telegram/events/Raw.js';
 import { DefaultEventInterface } from 'telegram/events/common.js';
-import { Album } from 'telegram/events/Album.js';
-import { DeletedMessage } from 'telegram/events/DeletedMessage.js';
+import { NewMessage, Raw } from 'telegram/events/index.js';
+import { StringSession } from 'telegram/sessions/index.js';
+import { config } from '../config.js';
 import { inject } from '../decorators/inject.decorator.js';
+import { TelegramClientError } from '../exceptions.js';
+import { CSHelper } from '../helpers/command-scope.helper.js';
+import { Store } from '../helpers/store.helper.js';
+import { ClassType, commandScopeMap, handlerKeys } from '../keys.js';
+import { DBService, HandlerService } from '../services/index.js';
+import { container } from '../states/container.js';
+import { Command, CommandHandler, CommandScope, Constructor, EntryHandler, EventInterface, ExtendedCommand, GroupedCommandScopes, HandlerTypes } from '../types.js';
 
 export class TelegramBotClient extends TelegramClient {
   private readonly commands: Command[] = [];
@@ -297,7 +296,6 @@ export class TelegramBotClient extends TelegramClient {
       botInfo?.about !== about ||
       botInfo?.name !== name
     ) {
-      console.log(botInfo);
       await this.invoke(
         new Api.bots.SetBotInfo({
           description,

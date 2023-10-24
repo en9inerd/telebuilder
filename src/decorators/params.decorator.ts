@@ -18,8 +18,12 @@ export function params<This, Return extends CommandParamsSchema>(
     }
 
     Object.values(initialValue).forEach((param) => {
-      if (!param.type || !['string', 'number', 'boolean'].includes(param.type)) {
+      if (!param.type || !['string', 'number', 'boolean', 'enum'].includes(param.type)) {
         throw new DecoratorError(`field '${methodName}' of '${(<Record<string, string>>this)?.constructor?.name}' class has unsupported type: ${param.type}`);
+      }
+
+      if (param.type === 'enum' && !param.enumValues) {
+        throw new DecoratorError(`field '${methodName}' of '${(<Record<string, string>>this)?.constructor?.name}' class has enum type but no enumValues`);
       }
     });
 

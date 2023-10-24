@@ -1,18 +1,18 @@
-import { Api, TelegramClient } from 'telegram';
+import { Api } from 'telegram';
+import { SendMessageParams } from 'telegram/client/messages.js';
 import { NewMessage, NewMessageEvent } from 'telegram/events/index.js';
 import { HelperError } from '../exceptions.js';
-import { SendMessageParams } from 'telegram/client/messages.js';
-import { userState } from '../states/index.js';
+import { getClient, userState } from '../states/index.js';
 import { formatErrorMessage } from '../utils.js';
 
 export async function userInputHandler(
-  client: TelegramClient,
   userId: bigInt.BigInteger,
   sendMessageParams?: SendMessageParams,
   deleteInputMessage = true,
   isCode = false
 ): Promise<string> {
   let inputMessage = '';
+  const client = getClient();
   const timespan = 180000; // 3 minutes
   const inputHandler = {
     callback: async function (event: NewMessageEvent) {
@@ -56,15 +56,15 @@ export async function userInputHandler(
 }
 
 export async function tryInputThreeTimes(
-  client: TelegramClient,
   userId: bigInt.BigInteger,
   sendMessageParams?: SendMessageParams,
   validationFn: (input: string) => Promise<boolean> = async (input) => input !== ''
 ): Promise<string> {
   let inputMessage = '';
+  const client = getClient();
   for (let i = 0; i <= 2; i++) {
     try {
-      inputMessage = await userInputHandler(client, userId, sendMessageParams);
+      inputMessage = await userInputHandler(userId, sendMessageParams);
       if (await validationFn(inputMessage)) break;
     } catch (err) {
       inputMessage = '';
