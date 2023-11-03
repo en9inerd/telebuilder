@@ -11,7 +11,7 @@ import { NewMessage, Raw } from 'telegram/events/index.js';
 import { StringSession } from 'telegram/sessions/index.js';
 import { config } from '../config.js';
 import { inject } from '../decorators/inject.decorator.js';
-import { TelegramClientError } from '../exceptions.js';
+import { TelegramClientException } from '../exceptions.js';
 import { CSHelper } from '../helpers/command-scope.helper.js';
 import { Store } from '../helpers/store.helper.js';
 import { ClassType, commandScopeMap, handlerKeys } from '../keys.js';
@@ -58,7 +58,7 @@ export class TelegramBotClient extends TelegramClient {
     if (params?.commands && params.commands.length > 0) {
       this.commands = params.commands.map((c) => container.resolve<Command>(c, ClassType.Command));
     } else {
-      throw new TelegramClientError('No commands provided');
+      throw new TelegramClientException('No commands provided');
     }
   }
 
@@ -242,7 +242,7 @@ export class TelegramBotClient extends TelegramClient {
     if (!commandScopeMap[scope?.name]) {
       const err = `Command scope '${scope?.name}' is not supported`;
       this.logger.error(err);
-      throw new TelegramClientError(err);
+      throw new TelegramClientException(err);
     }
     if ('peer' in scope && 'userId' in scope) {
       const inputPeer = await this.getInputEntity(scope.peer);
@@ -301,7 +301,7 @@ export class TelegramBotClient extends TelegramClient {
           description,
           about,
           name,
-          langCode
+          langCode,
         }),
       );
     }

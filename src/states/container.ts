@@ -1,4 +1,4 @@
-import { StateError } from '../exceptions.js';
+import { StateException } from '../exceptions.js';
 import { ClassType, clientInstance } from '../keys.js';
 import { Constructor, HydratedModel } from '../types.js';
 import { TelegramClient } from 'telegram';
@@ -32,7 +32,7 @@ class Container {
 
     const instance = classMap.get(classIdentifier);
     if (!instance) {
-      throw new StateError(`Class instance is not registered: ${classIdentifier.name}`);
+      throw new StateException(`Class instance is not registered: ${classIdentifier.name}`);
     }
     return instance;
   }
@@ -49,7 +49,7 @@ class Container {
   private getClassMap(type: ClassType) {
     const classMap = this.instances.get(type);
     if (!classMap) {
-      throw new StateError(`Invalid class type: ${type}`);
+      throw new StateException(`Invalid class type: ${type}`);
     }
     return classMap;
   }

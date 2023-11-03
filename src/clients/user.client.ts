@@ -39,7 +39,7 @@ export class TelegramUserClient extends TelegramClient {
         const errMessage = formatErrorMessage(err);
 
         await this.botClient.sendMessage(this.userId, {
-          message: (numberOfTries === 2) ? errMessage + '. Maximum number of tries reached. Try again later.' : errMessage
+          message: errMessage + ((numberOfTries === 2) ? '. Maximum number of tries reached. Try again later.' : '. Try again.')
         });
 
         if (numberOfTries < 2) {

@@ -1,4 +1,4 @@
-import { DecoratorError } from '../exceptions.js';
+import { DecoratorException } from '../exceptions.js';
 import { ClassType } from '../keys.js';
 import { container } from '../states/container.js';
 import { Constructor } from '../types.js';
@@ -9,7 +9,7 @@ export function injectable<Class extends Constructor<any>>(
   context: ClassDecoratorContext<Class>
 ) {
   if (context.kind !== 'class') {
-    throw new DecoratorError(`'injectable' can only decorate classes not: ${context.kind}`);
+    throw new DecoratorException(`'injectable' can only decorate classes not: ${context.kind}`);
   }
 
   container.register(target, new target(), ClassType.Service);

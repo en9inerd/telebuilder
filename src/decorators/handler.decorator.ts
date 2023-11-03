@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { DecoratorError } from '../exceptions.js';
+import { DecoratorException } from '../exceptions.js';
 import { handlerKeys } from '../keys.js';
 import { EventInterface, ExtendedCommand, HandlerDecoratorParams, HandlerTypes } from '../types.js';
 import { bound, locked } from './bound-and-locked.decorator.js';
@@ -18,7 +18,7 @@ export function handler<This, Args extends any[], Return>(params: HandlerDecorat
     let { type } = params;
 
     if (context.kind !== 'method') {
-      throw new DecoratorError(`'handler' can only decorate methods not: ${context.kind}`);
+      throw new DecoratorException(`'handler' can only decorate methods not: ${context.kind}`);
     }
 
     const methodName = context.name.toString();
@@ -27,12 +27,12 @@ export function handler<This, Args extends any[], Return>(params: HandlerDecorat
       if (methodName === 'entryHandler') type = HandlerTypes.NewMessage;
 
       if (!type) {
-        throw new DecoratorError(`'handler' decorator requires a type for method: ${methodName}`);
+        throw new DecoratorException(`'handler' decorator requires a type for method: ${methodName}`);
       }
 
       const handlerKey = (type) ? handlerKeys[type] : null;
       if (!handlerKey) {
-        throw new DecoratorError(`'handler' decorator does not support type: ${type}`);
+        throw new DecoratorException(`'handler' decorator does not support type: ${type}`);
       }
 
       if (!((<ExtendedCommand>this)[handlerKey])) {
@@ -43,17 +43,16 @@ export function handler<This, Args extends any[], Return>(params: HandlerDecorat
     });
 
     if (lock) {
-      if (validateCommandParams && methodName === 'entryHandler') {
-        return bound(
-          paramsValidation(
-            locked(target, context) as (this: This, ...args: Args) => Return, context
-          ) as (this: This, ...args: Args) => Return, context
-        );
-      } else {
-        return bound(locked(target, context) as (this: This, ...args: Args) => Return, context);
-      }
+      const fnToLock = validateCommandParams && methodName === 'entryHandler'
+        ? paramsValidation(locked(target, context) as (this: This, ...args: Args) => Return, context)
+        : locked(target, context);
+      return bound(fnToLock as (this: This, ...args: Args) => Return, context);
     } else {
-      return bound(target, context);
+      const fnToUse = validateCommandParams && methodName === 'entryHandler'
+        ? paramsValidation(target, context)
+        : target;
+      return bound(fnToUse as (this: This, ...args: Args) => Return, context);
     }
+
   };
 }

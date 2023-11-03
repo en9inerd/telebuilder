@@ -1,5 +1,19 @@
 export function formatErrorMessage(err: Error): string {
-  return 'Error: ' + err.message.split(' (')[0];
+  let message = err.message.split(' (')[0];
+  const regex = /^(\d{3}): ([A-Z_]+).*/;
+  const match = message.match(regex);
+
+  if (match) {
+    // const errorCode = match[1];
+    const errorType = match[2];
+    message = errorType
+      .split('_')
+      .join(' ').toLocaleLowerCase();
+
+    return `Error: ${message}`;
+  } else {
+    return message;
+  }
 }
 
 export function isAsync(fn: CallableFunction): boolean {

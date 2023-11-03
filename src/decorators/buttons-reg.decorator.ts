@@ -1,4 +1,4 @@
-import { DecoratorError } from '../exceptions.js';
+import { DecoratorException } from '../exceptions.js';
 import { handlerKeys } from '../keys.js';
 import { Buttons, ExtendedCommand } from '../types.js';
 
@@ -7,7 +7,7 @@ export function buttonsReg<This, Return extends Buttons>(
   context: ClassFieldDecoratorContext<This, Return>
 ) {
   if (context.kind !== 'field') {
-    throw new DecoratorError(`'buttonsReg' can only decorate fields not: ${context.kind}`);
+    throw new DecoratorException(`'buttonsReg' can only decorate fields not: ${context.kind}`);
   }
 
   return function (this: This, initialValue: Return): Return {
@@ -17,7 +17,7 @@ export function buttonsReg<This, Return extends Buttons>(
       row.map((button) => {
         const handlerName = button?.data?.toString().split(':')[0];
         if (!(<ExtendedCommand>this)[handlerKeys.callbackQuery]?.has(handlerName)) {
-          throw new DecoratorError(`'${className}.${context.name.toString()}' has a button with data '${handlerName}' that is not a callbackQueryHandler.`);
+          throw new DecoratorException(`'${className}.${context.name.toString()}' has a button with data '${handlerName}' that is not a callbackQueryHandler.`);
         }
         button.data = Buffer.from(`${className}:${button.data}`);
         return button;

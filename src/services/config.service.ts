@@ -1,7 +1,7 @@
 import { access } from 'fs/promises';
 import { fileURLToPath } from 'url';
 import { join, dirname } from 'path';
-import { ConfigError } from '../exceptions.js';
+import { ConfigException } from '../exceptions.js';
 import { configInstance } from '../keys.js';
 
 export class ConfigService {
@@ -69,7 +69,7 @@ export class ConfigService {
       return dir;
     }
 
-    throw new ConfigError('Cannot find root app directory');
+    throw new ConfigException('Cannot find root app directory');
   }
 
   private async loadConfigFile(filePath: string) {
@@ -77,7 +77,7 @@ export class ConfigService {
       const module = await import(filePath);
       return module.default || module;
     } catch (error) {
-      throw new ConfigError(`Failed to load config file: ${(<Error>error).message}`);
+      throw new ConfigException(`Failed to load config file: ${(<Error>error).message}`);
     }
   }
 
@@ -91,7 +91,7 @@ export class ConfigService {
 
     for (const k of keys) {
       if (!Object.prototype.hasOwnProperty.call(config, k)) {
-        throw new ConfigError(`Config key "${key}" not found`);
+        throw new ConfigException(`Config key "${key}" not found`);
       }
       config = config[k];
     }

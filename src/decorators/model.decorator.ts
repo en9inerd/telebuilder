@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { DecoratorError } from '../exceptions.js';
+import { DecoratorException } from '../exceptions.js';
 import { ClassType } from '../keys.js';
 import { container } from '../states/container.js';
 import { Constructor, ModelDecoratorParams } from '../types.js';
@@ -11,7 +11,7 @@ export function model<Class extends Constructor<any>>(params?: ModelDecoratorPar
     context: ClassDecoratorContext<Class>
   ) {
     if (context.kind !== 'class') {
-      throw new DecoratorError(`'model' can only decorate classes not: ${context.kind}`);
+      throw new DecoratorException(`'model' can only decorate classes not: ${context.kind}`);
     }
 
     const instance = new target();

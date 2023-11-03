@@ -1,7 +1,7 @@
 import { Api } from 'telegram';
 import { SendMessageParams } from 'telegram/client/messages.js';
 import { NewMessage, NewMessageEvent } from 'telegram/events/index.js';
-import { HelperError } from '../exceptions.js';
+import { HelperException } from '../exceptions.js';
 import { getClient, userState } from '../states/index.js';
 import { formatErrorMessage } from '../utils.js';
 
@@ -48,8 +48,7 @@ export async function userInputHandler(
   client.removeEventHandler(inputHandler.callback, inputHandler.event);
 
   if (!inputMessage) {
-    await client.sendMessage(userId, { message: 'Timeout' });
-    throw new HelperError('Timeout');
+    throw new HelperException('Timeout');
   }
 
   return inputMessage;
@@ -72,7 +71,7 @@ export async function tryInputThreeTimes(
         const msg = (i === 2) ? '. Maximum number of tries reached. Try again later.' : '. Try again.';
         await client.sendMessage(userId, { message: formatErrorMessage(err) + msg });
       } else {
-        break;
+        throw err;
       }
     }
   }
@@ -110,7 +109,7 @@ export function getDataFromButtonCallback(data: Buffer): {
       extraData: dataStrArr[2]
     };
   } else {
-    throw new HelperError(`Invalid button callback data: ${dataStr}`);
+    throw new HelperException(`Invalid button callback data: ${dataStr}`, { sendToUser: false });
   }
 }
 
