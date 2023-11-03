@@ -1,3 +1,10 @@
+## [0.6.4](https://github.com/en9inerd/telebuilder/compare/v0.6.3...v0.6.4) (2023-11-03)
+
+
+### Bug Fixes
+
+* error handling improvements ([e00cfb2](https://github.com/en9inerd/telebuilder/commit/e00cfb20fda6eb26b57ec2893c2b5151e717a032))
+
 ## [0.6.3](https://github.com/en9inerd/telebuilder/compare/v0.6.2...v0.6.3) (2023-10-24)
 
 
