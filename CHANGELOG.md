@@ -1,3 +1,11 @@
+## [0.6.5](https://github.com/en9inerd/telebuilder/compare/v0.6.4...v0.6.5) (2024-02-01)
+
+
+### Bug Fixes
+
+* update dependencies ([523e520](https://github.com/en9inerd/telebuilder/commit/523e520d43b3cb045187b446f23e499535c5fdd5))
+* update node version in ga workflow ([ccc793e](https://github.com/en9inerd/telebuilder/commit/ccc793e7b593c11aa060c5bff0c66a54b91df7d1))
+
 ## [0.6.4](https://github.com/en9inerd/telebuilder/compare/v0.6.3...v0.6.4) (2023-11-03)
 
 
