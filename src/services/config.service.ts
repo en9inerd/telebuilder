@@ -81,7 +81,7 @@ export class ConfigService {
     }
   }
 
-  get<T>(key: string = ''): T {
+  get<T>(key: string = '', defaultValue?: T): T {
     if (!key) {
       return this.config;
     }
@@ -91,6 +91,9 @@ export class ConfigService {
 
     for (const k of keys) {
       if (!Object.prototype.hasOwnProperty.call(config, k)) {
+        if (defaultValue !== undefined) {
+          return defaultValue;
+        }
         throw new ConfigException(`Config key "${key}" not found`);
       }
       config = config[k];
