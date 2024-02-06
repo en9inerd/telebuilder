@@ -1,7 +1,7 @@
-import { Dictionary } from '../types.js';
+import { Dict } from '../types.js';
 
 export class BaseState {
-  private _state: Map<string, Dictionary> = new Map();
+  private _state: Map<string, Dict> = new Map();
 
   public get<T>(stateId: string, key: string): T | undefined {
     return <T>(this._state.get(stateId)?.[key]);

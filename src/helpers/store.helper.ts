@@ -8,4 +8,4 @@ function getStore(dirPath: string): StoreAPI {
     : (<StoreAPI><unknown>store).area('fs', localStorage);
 }
 
-export const Store = getStore(config.get('botConfig.botDirInfo'));
+export const Store = getStore(config.get('botConfig.botDataDir'));
