@@ -1,14 +1,13 @@
 import { StateException } from '../exceptions.js';
 import { ClassType, clientInstance } from '../keys.js';
-import { Constructor, HydratedModel } from '../types.js';
+import { Constructor } from '../types.js';
 import { TelegramClient } from 'telegram';
 
 class Container {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private instances: Map<ClassType, Map<Constructor<any>, any>> = new Map([
     [ClassType.Service, new Map()],
-    [ClassType.Command, new Map()],
-    [ClassType.Model, new Map()]
+    [ClassType.Command, new Map()]
   ]);
   [clientInstance]!: TelegramClient;
 
@@ -35,10 +34,6 @@ class Container {
       throw new StateException(`Class instance is not registered: ${classIdentifier.name}`);
     }
     return instance;
-  }
-
-  public resolveModel<T>(classIdentifier: Constructor<T>): HydratedModel<T> {
-    return <HydratedModel<T>>this.resolve(classIdentifier, ClassType.Model);
   }
 
   resolveAll<T>(type: ClassType): T[] {

@@ -1,4 +1,4 @@
-import { Api } from 'telegram';
+import { Api, Logger } from 'telegram';
 import { NewMessageEvent } from 'telegram/events';
 import { commandScopeMap, handlerKeys } from './keys.js';
 import { NewMessageInterface } from 'telegram/events/NewMessage.js';
@@ -6,19 +6,26 @@ import { NewCallbackQueryInterface } from 'telegram/events/CallbackQuery.js';
 import { DefaultEventInterface } from 'telegram/events/common.js';
 import { EditedMessageInterface } from 'telegram/events/EditedMessage.js';
 import { RawInterface } from 'telegram/events/Raw.js';
+import { BaseDBService } from './services/index.js';
 
-export type Dictionary<T = unknown> = Record<string, T>;
+export type Dict<T = unknown> = Record<string, T>;
+
+export type ClientParams = {
+  commands: Constructor<Command>[];
+  baseLogger?: Logger;
+  dbService?: Constructor<BaseDBService>;
+};
 
 export type GroupedCommandScopes = Record<string, Record<string, string[]>>;
 
-export type Command = {
+export interface Command {
   readonly command: string;
   description: string;
   scopes: CommandScope[];
   langCodes: string[];
   params?: CommandParamsSchema;
   entryHandler: EntryHandler;
-};
+}
 
 export type ParamType = 'string' | 'number' | 'boolean' | 'enum';
 export type ParamSchema = {
@@ -28,9 +35,9 @@ export type ParamSchema = {
   default?: string | number | boolean;
 };
 
-export type CommandParamsSchema = Dictionary<ParamSchema>;
+export type CommandParamsSchema = Dict<ParamSchema>;
 
-export type ValidatedCommandParams = Dictionary<string | number | boolean>;
+export type ValidatedCommandParams = Dict<string | number | boolean>;
 
 export type ExtendedMessage = Api.Message & { params?: ValidatedCommandParams };
 
@@ -58,23 +65,8 @@ export type CommandScope =
 
 export type Buttons = Api.KeyboardButtonCallback[][];
 
-export type HydratedModel<T> = T & Required<ModelParams>;
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Constructor<T> = new (...args: any[]) => T;
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type GenericModel = HydratedModel<any>;
-
-export type ModelParams = {
-  $collectionName?: string;
-  $jsonSchema?: Dictionary;
-};
-
-export type ModelDecoratorParams = {
-  collectionName?: string;
-  jsonSchema?: Dictionary;
-};
 
 export type HandlerType = keyof typeof handlerKeys;
 export enum HandlerTypes {
@@ -94,19 +86,3 @@ export type HandlerDecoratorParams = {
 };
 
 export type EventInterface = NewMessageInterface | NewCallbackQueryInterface | DefaultEventInterface | EditedMessageInterface | RawInterface;
-
-export type Handler = {
-  name: string;
-  command: string;
-  type: HandlerType;
-  event: {
-    incoming?: boolean;
-    outgoing?: boolean;
-    chats?: Array<string | bigInt.BigInteger>;
-    blacklistChats?: boolean;
-    fromUsers?: Array<string | bigInt.BigInteger>;
-    blacklistUsers?: Array<string | bigInt.BigInteger>;
-    forwards?: boolean;
-    pattern?: string | RegExp;
-  };
-};

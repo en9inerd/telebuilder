@@ -29,5 +29,4 @@ export const commandParamsSchema = Symbol('commandParamsSchema');
 export enum ClassType {
   Service,
   Command,
-  Model,
 }
