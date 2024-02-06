@@ -1,54 +1,40 @@
-import { TelegramClient } from 'telegram';
-import { StringSession } from 'telegram/sessions/index.js';
-import { config } from '../config.js';
-import { userInputHandler } from '../helpers/index.js';
-import { getClient } from '../states/index.js';
+import { TelegramClientException } from '../exceptions.js';
+import { input } from '../helpers/input.helper.js';
+import { Store } from '../helpers/store.helper.js';
+import { ClientParams } from '../types.js';
 import { formatErrorMessage } from '../utils.js';
+import { TelegramBotClient } from './bot.client.js';
 
-export class TelegramUserClient extends TelegramClient {
-  constructor(
-    private readonly sessionStr: string,
-    private readonly userId: bigInt.BigInteger,
-    private readonly botClient = getClient()
-  ) {
-    super(
-      new StringSession(sessionStr),
-      config.get('botConfig.apiId'),
-      config.get('botConfig.apiHash'),
-      {
-        baseLogger: botClient.logger,
-        connectionRetries: config.get('botConfig.connectionRetries'),
-        deviceModel: config.get('botConfig.deviceModel'),
-        appVersion: config.get('botConfig.appVersion'),
-        systemVersion: config.get('botConfig.systemVersion'),
-        langCode: config.get('botConfig.connectionLangCode'),
-        systemLangCode: config.get('botConfig.systemLangCode')
-      }
-    );
+export class TelegramUserClient extends TelegramBotClient {
+  constructor(protected override readonly params: ClientParams) {
+    super(params);
   }
 
-  public async init(): Promise<void> {
-    let numberOfTries = 0;
-
+  protected override async initUserBot(): Promise<void> {
     await this.start({
-      phoneNumber: async () => await userInputHandler(this.userId, { message: 'Enter your phone number:' }),
-      password: async () => await userInputHandler(this.userId, { message: 'Enter your password:' }),
-      phoneCode: async () => await userInputHandler(this.userId, { message: 'Enter the code you received:' }, true, true),
+      phoneNumber: async () => await input.text('Enter your phone number: '),
+      password: async () => await input.password('Enter your password: '),
+      phoneCode: async () => await input.text('Enter the code sent to your phone: '),
       onError: async (err) => {
-        if (err.message === 'Timeout') throw err;
         const errMessage = formatErrorMessage(err);
 
-        await this.botClient.sendMessage(this.userId, {
-          message: errMessage + ((numberOfTries === 2) ? '. Maximum number of tries reached. Try again later.' : '. Try again.')
-        });
-
-        if (numberOfTries < 2) {
-          numberOfTries++;
-          return false;
+        if (errMessage === 'Input closed unexpectedly') {
+          process.stdout.write('\n');
         }
 
-        throw err;
+        input.close();
+        throw new TelegramClientException(errMessage);
       }
     });
+
+    input.close();
+
+    // Save the session if it doesn't exist
+    if (!Store.get(this.sessionName, '')) {
+      Store.set(this.sessionName, this.session.save());
+    }
+
+    // Register event handlers
+    this.registerEventHandlers();
   }
 }
