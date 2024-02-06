@@ -1,3 +1,20 @@
+# [0.7.0](https://github.com/en9inerd/telebuilder/compare/v0.6.5...v0.7.0) (2024-02-06)
+
+
+### Bug Fixes
+
+* add event service based on event emitter ([52ffc35](https://github.com/en9inerd/telebuilder/commit/52ffc35aee2ce6e195aa93f96acaca6cb753a9e2))
+* cleanup config ([bb4a76b](https://github.com/en9inerd/telebuilder/commit/bb4a76becf373ee188dfdfe800daf2ff825516d8))
+* config service improvements ([7de2c1e](https://github.com/en9inerd/telebuilder/commit/7de2c1e154dc38cd54123e2822965ace0e506e1d))
+* eliminate mongodb dependency ([bb490a6](https://github.com/en9inerd/telebuilder/commit/bb490a66b188cdab0df12a7e24a02c4a52cac303))
+* minor changes ([ca52963](https://github.com/en9inerd/telebuilder/commit/ca5296377668d327058b8e62510bb92e048aece1))
+* remove unused code ([b82c991](https://github.com/en9inerd/telebuilder/commit/b82c99134750b2d3f5c0c52a369f9b95df2382e5))
+
+
+### Features
+
+* add input helper ([87b6d26](https://github.com/en9inerd/telebuilder/commit/87b6d267dd4b8b14b1a88ae3e46b74a5a8f4479e))
+
 ## [0.6.5](https://github.com/en9inerd/telebuilder/compare/v0.6.4...v0.6.5) (2024-02-01)
 
 
