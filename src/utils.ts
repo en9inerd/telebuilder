@@ -18,10 +18,13 @@ export function formatErrorMessage(err: Error): string {
 
 export function isAsync(fn: CallableFunction): boolean {
   return (
-    fn?.constructor?.name === 'AsyncFunction' ||
-    Object.prototype.toString.call(fn) === '[object AsyncFunction]' ||
+    (fn?.constructor?.name === 'AsyncFunction' ||
+      Object.prototype.toString.call(fn) === '[object AsyncFunction]') ||
     fn instanceof Promise ||
-    (fn !== null && typeof fn === 'object' && typeof (<Promise<unknown>>fn).then === 'function' && typeof (<Promise<unknown>>fn).catch === 'function')
+    (fn !== null &&
+      typeof fn === 'object' &&
+      typeof (fn as Promise<unknown>).then === 'function' &&
+      typeof (fn as Promise<unknown>).catch === 'function')
   );
 }
 
@@ -36,6 +39,27 @@ export function addS(str: string): string {
   } else {
     return word + 's';
   }
+}
+
+export function getImageFormat(buffer: Buffer): string | undefined {
+  const signatures = {
+    jpg: 'ffd8ffe0',
+    png: '89504e47',
+    gif: '47494638',
+    bmp: '424d',
+    webp: '52494646',
+    tiff: '49492a00',
+  };
+
+  const signature = buffer.toString('hex', 0, 8).toLowerCase();
+  for (const [format, sig] of Object.entries(signatures)) {
+    if (signature.startsWith(sig)) {
+      return format;
+    }
+  }
+
+  // Not recognized
+  return undefined;
 }
 
 export function* chunkify<T>(inputList: T[], num: number): Generator<T[]> {
