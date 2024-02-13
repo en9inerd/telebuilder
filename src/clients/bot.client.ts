@@ -28,7 +28,7 @@ export class TelegramBotClient extends TelegramClient {
   constructor(
     protected readonly params?: ClientParams
   ) {
-    const sessionName = config.get<string>('botConfig.testServers') ? 'testSession' : 'session';
+    const sessionName = config.get<boolean>('botConfig.testServers', false) ? 'testSession' : 'session';
 
     super(
       new StringSession(Store.get(sessionName, '')),
@@ -36,22 +36,22 @@ export class TelegramBotClient extends TelegramClient {
       config.get('botConfig.apiHash'),
       {
         baseLogger: params?.baseLogger,
-        connectionRetries: config.get('botConfig.connectionRetries'),
-        deviceModel: config.get('botConfig.deviceModel'),
+        connectionRetries: config.get('botConfig.connectionRetries', Infinity),
+        deviceModel: config.get<string>('botConfig.deviceModel', ''),
         appVersion: config.get('botConfig.appVersion'),
-        systemVersion: config.get('botConfig.systemVersion'),
-        langCode: config.get('botConfig.connectionLangCode'),
-        systemLangCode: config.get('botConfig.systemLangCode'),
-        testServers: config.get('botConfig.testServers'),
-        useWSS: config.get('botConfig.useWSS'),
+        systemVersion: config.get<string>('botConfig.systemVersion', ''),
+        langCode: config.get<string>('botConfig.connectionLangCode', 'en'),
+        systemLangCode: config.get<string>('botConfig.systemLangCode', 'en'),
+        testServers: config.get<boolean>('botConfig.testServers', false),
+        useWSS: config.get<boolean>('botConfig.useWSS', true),
       },
     );
     this.sessionName = sessionName;
     container.client = this;
 
-    const dcId = config.get<number>('botConfig.dcId');
-    const serverAddress = config.get<string>('botConfig.serverAddress');
-    const serverPort = config.get<number>('botConfig.serverPort');
+    const dcId = config.get<number | null>('botConfig.dcId', null);
+    const serverAddress = config.get<string>('botConfig.serverAddress', '');
+    const serverPort = config.get<number | null>('botConfig.serverPort', null);
     if (dcId && serverAddress && serverPort && !this.session.serverAddress) {
       this.session.setDC(dcId, serverAddress, serverPort);
     }
@@ -114,7 +114,7 @@ export class TelegramBotClient extends TelegramClient {
   private async initBot(): Promise<void> {
     // Start the bot
     await this.start({
-      botAuthToken: config.get('botConfig.token'),
+      botAuthToken: config.get<string>('botConfig.token'),
     });
 
     // Save the session if it doesn't exist
@@ -260,7 +260,7 @@ export class TelegramBotClient extends TelegramClient {
   }
 
   private async uploadProfilePhoto(): Promise<void> {
-    const profilePhotoUrl = config.get<string>('botConfig.profilePhotoUrl');
+    const profilePhotoUrl = config.get<string | null>('botConfig.profilePhotoUrl', null);
     if (profilePhotoUrl) {
       const response = await fetch(profilePhotoUrl);
       const extension = response.headers.get('content-type')?.split('/')[1];
@@ -284,10 +284,10 @@ export class TelegramBotClient extends TelegramClient {
   }
 
   private async updateProfileInfo(): Promise<void> {
-    const name = config.get<string>('botConfig.name');
-    const about = config.get<string>('botConfig.about');
-    const description = config.get<string>('botConfig.description');
-    const langCode = config.get<string>('botConfig.botInfoLangCode');
+    const name = config.get<string>('botConfig.name', '');
+    const about = config.get<string>('botConfig.about', '');
+    const description = config.get<string>('botConfig.description', '');
+    const langCode = config.get<string>('botConfig.botInfoLangCode', '');
 
     const botInfo = await this.invoke(
       new Api.bots.GetBotInfo({
@@ -295,9 +295,9 @@ export class TelegramBotClient extends TelegramClient {
       }),
     );
 
-    if (botInfo?.description !== description ||
+    if ((botInfo?.description !== description ||
       botInfo?.about !== about ||
-      botInfo?.name !== name
+      botInfo?.name !== name) && (description || about || name)
     ) {
       await this.invoke(
         new Api.bots.SetBotInfo({
