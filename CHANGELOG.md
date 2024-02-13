@@ -1,3 +1,11 @@
+## [0.7.1](https://github.com/en9inerd/telebuilder/compare/v0.7.0...v0.7.1) (2024-02-13)
+
+
+### Bug Fixes
+
+* add function to get image format from buffer ([b0a8c25](https://github.com/en9inerd/telebuilder/commit/b0a8c2521ae7335f8f3e7f266402c7228fc9ece3))
+* fix configuration ([c9af714](https://github.com/en9inerd/telebuilder/commit/c9af714051426c29efb5cfebf56475603d98beb6))
+
 # [0.7.0](https://github.com/en9inerd/telebuilder/compare/v0.6.5...v0.7.0) (2024-02-06)
 
 
