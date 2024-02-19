@@ -301,9 +301,9 @@ export class TelegramBotClient extends TelegramClient {
     ) {
       await this.invoke(
         new Api.bots.SetBotInfo({
-          description,
-          about,
-          name,
+          description: (description || botInfo?.description),
+          about: (about || botInfo?.about),
+          name: (name || botInfo?.name),
           langCode,
         }),
       );
