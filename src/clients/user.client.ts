@@ -16,18 +16,9 @@ export class TelegramUserClient extends TelegramBotClient {
       password: async () => await input.password('Enter your password: '),
       phoneCode: async () => await input.text('Enter the code sent to your phone: '),
       onError: async (err) => {
-        const errMessage = formatErrorMessage(err);
-
-        if (errMessage === 'Input closed unexpectedly') {
-          process.stdout.write('\n');
-        }
-
-        input.close();
-        throw new TelegramClientException(errMessage);
+        throw new TelegramClientException(formatErrorMessage(err));
       }
     });
-
-    input.close();
 
     // Save the session if it doesn't exist
     if (!Store.get(this.sessionName, '')) {
