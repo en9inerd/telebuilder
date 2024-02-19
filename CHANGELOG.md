@@ -1,3 +1,12 @@
+## [0.7.2](https://github.com/en9inerd/telebuilder/compare/v0.7.1...v0.7.2) (2024-02-19)
+
+
+### Bug Fixes
+
+* improvements to update bot profile info ([ef6dd40](https://github.com/en9inerd/telebuilder/commit/ef6dd40f25a7a237feb25809d225e30183d9f970))
+* input based on `read` library ([5533da7](https://github.com/en9inerd/telebuilder/commit/5533da749e20e3b709ccad3382b7c2f85692114c))
+* update dependencies ([53db34d](https://github.com/en9inerd/telebuilder/commit/53db34d613420042d99aefd5424db863ccc88cd3))
+
 ## [0.7.1](https://github.com/en9inerd/telebuilder/compare/v0.7.0...v0.7.1) (2024-02-13)
 
 
