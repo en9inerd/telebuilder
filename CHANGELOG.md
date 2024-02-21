@@ -1,3 +1,10 @@
+## [0.7.4](https://github.com/en9inerd/telebuilder/compare/v0.7.3...v0.7.4) (2024-02-21)
+
+
+### Bug Fixes
+
+* check if config files exist ([7590db9](https://github.com/en9inerd/telebuilder/commit/7590db9273ba6443d44228e63f0c933bb767c14b))
+
 ## [0.7.3](https://github.com/en9inerd/telebuilder/compare/v0.7.2...v0.7.3) (2024-02-21)
 
 
