@@ -1,3 +1,10 @@
+## [0.7.3](https://github.com/en9inerd/telebuilder/compare/v0.7.2...v0.7.3) (2024-02-21)
+
+
+### Bug Fixes
+
+* minor improvement ([a2e8dad](https://github.com/en9inerd/telebuilder/commit/a2e8dadd1fc7566ec33a8fd7df2fdc0bf0b8986a))
+
 ## [0.7.2](https://github.com/en9inerd/telebuilder/compare/v0.7.1...v0.7.2) (2024-02-19)
 
 
