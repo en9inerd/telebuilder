@@ -25,17 +25,34 @@ export class ConfigService {
   }
 
   async init() {
-    if (!this.isConfigLoaded) {
-      this.rootAppDir = await this.getRootAppDir();
-      this.defaultConfigPath = join(this.rootAppDir, 'config', 'default.js');
-      this.envConfigPath = join(this.rootAppDir, 'config', `${process.env.NODE_ENV || 'default'}.js`);
+    if (this.isConfigLoaded) {
+      return;
+    }
 
-      const defaultConfig = await this.loadConfigFile(this.defaultConfigPath);
-      const envConfig = await this.loadConfigFile(this.envConfigPath);
+    this.rootAppDir = await this.getRootAppDir();
+    this.defaultConfigPath = join(this.rootAppDir, 'config', 'default.js');
+    this.envConfigPath = join(this.rootAppDir, 'config', `${process.env.NODE_ENV || 'default'}.js`);
 
-      this.config = { ...defaultConfig, ...envConfig };
-      Object.freeze(this.config); // Make the config read-only
-      this.isConfigLoaded = true;
+    await this.checkConfigFileExists(this.defaultConfigPath, 'Default');
+    const envConfigExists = await this.checkConfigFileExists(this.envConfigPath, 'Environment', false);
+
+    const defaultConfig = await this.loadConfigFile(this.defaultConfigPath);
+    const envConfig = envConfigExists ? await this.loadConfigFile(this.envConfigPath) : {};
+
+    this.config = { ...defaultConfig, ...envConfig };
+    Object.freeze(this.config); // Make the config read-only
+    this.isConfigLoaded = true;
+  }
+
+  private async checkConfigFileExists(filePath: string, configType: string, throwError = true) {
+    try {
+      await access(filePath);
+      return true;
+    } catch (error) {
+      if (throwError) {
+        throw new ConfigException(`${configType} config file not found: ${filePath}`);
+      }
+      return false;
     }
   }
 
