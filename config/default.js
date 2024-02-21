@@ -6,7 +6,7 @@ const version = JSON.parse(await readFile(new URL('../package.json', import.meta
 
 export default {
     botConfig: {
-        botDataDir: process.env.TG_BOT_DIR_INFO || './botData',
+        botDataDir: process.env.TG_BOT_DATA_DIR || './botData',
         apiId: parseInt(process.env.TG_BOT_API_ID),
         apiHash: process.env.TG_BOT_API_HASH,
         token: process.env.TG_BOT_TOKEN,
