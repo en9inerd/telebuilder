@@ -2,7 +2,7 @@
 import { NewMessageEvent } from 'telegram/events/NewMessage.js';
 import { DecoratorException } from '../exceptions.js';
 import { commandParamsSchema } from '../keys.js';
-import { CommandParamsSchema, ExtendedMessage, ValidatedCommandParams } from '../types.js';
+import { CommandParamsSchema, MessageWithParams, ValidatedCommandParams } from '../types.js';
 
 export function paramsValidation<This, Args extends any[], Return>(
   target: (this: This, ...args: Args) => Return,
@@ -69,7 +69,7 @@ export function paramsValidation<This, Args extends any[], Return>(
         return;
       }
 
-      (<ExtendedMessage>event.message).params = validatedParams;
+      (<MessageWithParams>event.message).params = validatedParams;
     }
 
     return await target.apply(this, args);

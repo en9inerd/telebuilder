@@ -39,7 +39,7 @@ export type CommandParamsSchema = Dict<ParamSchema>;
 
 export type ValidatedCommandParams = Dict<string | number | boolean>;
 
-export type ExtendedMessage = Api.Message & { params?: ValidatedCommandParams };
+export type MessageWithParams<T = unknown> = Api.Message & { params?: T };
 
 export type ExtendedCommand = Command & Record<symbol, Map<string, EventInterface>> & Record<string, CommandHandler>;
 
