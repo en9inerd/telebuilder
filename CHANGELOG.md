@@ -1,3 +1,10 @@
+## [0.7.5](https://github.com/en9inerd/telebuilder/compare/v0.7.4...v0.7.5) (2024-02-22)
+
+
+### Bug Fixes
+
+* check if NODE_ENV env variable exists ([748aec4](https://github.com/en9inerd/telebuilder/commit/748aec401e25ea7cb018255c825f64b4649e6439))
+
 ## [0.7.4](https://github.com/en9inerd/telebuilder/compare/v0.7.3...v0.7.4) (2024-02-21)
 
 
