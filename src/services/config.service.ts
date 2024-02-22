@@ -31,10 +31,13 @@ export class ConfigService {
 
     this.rootAppDir = await this.getRootAppDir();
     this.defaultConfigPath = join(this.rootAppDir, 'config', 'default.js');
-    this.envConfigPath = join(this.rootAppDir, 'config', `${process.env.NODE_ENV || 'default'}.js`);
-
     await this.checkConfigFileExists(this.defaultConfigPath, 'Default');
-    const envConfigExists = await this.checkConfigFileExists(this.envConfigPath, 'Environment', false);
+
+    let envConfigExists = false;
+    if (process.env.NODE_ENV) {
+      this.envConfigPath = join(this.rootAppDir, 'config', `${process.env.NODE_ENV}.js`);
+      envConfigExists = await this.checkConfigFileExists(this.envConfigPath, 'Environment', false);
+    }
 
     const defaultConfig = await this.loadConfigFile(this.defaultConfigPath);
     const envConfig = envConfigExists ? await this.loadConfigFile(this.envConfigPath) : {};
