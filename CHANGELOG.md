@@ -1,3 +1,10 @@
+## [0.7.6](https://github.com/en9inerd/telebuilder/compare/v0.7.5...v0.7.6) (2024-02-22)
+
+
+### Bug Fixes
+
+* merge configs accurately ([1bb0827](https://github.com/en9inerd/telebuilder/commit/1bb082733edd17b64d8938c2cbdcf4e8c1ca5854))
+
 ## [0.7.5](https://github.com/en9inerd/telebuilder/compare/v0.7.4...v0.7.5) (2024-02-22)
 
 
