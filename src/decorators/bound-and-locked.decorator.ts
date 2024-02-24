@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { DecoratorException } from '../exceptions.js';
-import { getClient, userState } from '../states/index.js';
-import { formatErrorMessage } from '../utils.js';
+import { userState } from '../states/index.js';
 
 export function locked<This, Args extends any[], Return>(
   target: (this: This, ...args: Args) => Return,
@@ -28,24 +27,8 @@ export function locked<This, Args extends any[], Return>(
     try {
       result = await target.apply(this, args);
     } catch (err: any) {
-      const client = getClient();
-
-      if (!(err)?.sendToUser) {
-        client.logger.error(`User ID: '${senderId}', ${(err).name}: ${(err).message}`);
-        console.error(err);
-      }
-
-      if (lockCondition) {
-        let message;
-        if ((err)?.sendToUser) {
-          message = formatErrorMessage(err);
-        } else {
-          message = 'Something went wrong. Please try again later.';
-        }
-        await client.sendMessage(senderId, { message });
-
-        userState.deleteStateProperty(senderId, 'commandLock');
-      }
+      userState.deleteStateProperty(senderId, 'commandLock');
+      console.error(err);
     }
 
     // execute something after the method call

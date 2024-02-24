@@ -109,7 +109,7 @@ export function getDataFromButtonCallback(data: Buffer): {
       extraData: dataStrArr[2]
     };
   } else {
-    throw new HelperException(`Invalid button callback data: ${dataStr}`, { sendToUser: false });
+    throw new HelperException(`Invalid button callback data: ${dataStr}`);
   }
 }
 

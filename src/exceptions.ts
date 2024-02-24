@@ -20,17 +20,14 @@ export class StateException extends Error {
 }
 
 export class CommandException extends Error {
-  sendToUser: boolean;
-
-  constructor(message: string, options?: { cause?: unknown, sendToUser?: boolean }) {
+  constructor(message: string, options?: { cause?: unknown }) {
     super(message, options);
     this.name = 'CommandException';
-    this.sendToUser = options?.sendToUser || true;
   }
 }
 
 export class HelperException extends CommandException {
-  constructor(message: string, options?: { cause?: unknown, sendToUser?: boolean }) {
+  constructor(message: string, options?: { cause?: unknown }) {
     super(message, options);
     this.name = 'HelperException';
   }

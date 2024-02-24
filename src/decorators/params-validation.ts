@@ -75,6 +75,7 @@ export function paramsValidation<This, Args extends any[], Return>(
     return await target.apply(this, args);
   }
 
+  // change replacementMethod name to the original method name
   Object.defineProperty(replacementMethod, 'name', { value: context.name.toString() });
 
   return replacementMethod;
