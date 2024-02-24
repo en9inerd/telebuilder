@@ -1,3 +1,10 @@
+## [0.7.7](https://github.com/en9inerd/telebuilder/compare/v0.7.6...v0.7.7) (2024-02-24)
+
+
+### Bug Fixes
+
+* add more flexibility for error catching ([ad582d1](https://github.com/en9inerd/telebuilder/commit/ad582d1b7239561e2cba856f35d4007b578db3f9))
+
 ## [0.7.6](https://github.com/en9inerd/telebuilder/compare/v0.7.5...v0.7.6) (2024-02-22)
 
 
