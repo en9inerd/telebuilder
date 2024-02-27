@@ -1,5 +1,5 @@
 import { DecoratorException } from '../exceptions.js';
-import { ClassType } from '../keys.js';
+import { ClassType, clientInstanceFieldName } from '../keys.js';
 import { container } from '../states/container.js';
 import { Constructor } from '../types.js';
 
@@ -12,5 +12,16 @@ export function injectable<Class extends Constructor<any>>(
     throw new DecoratorException(`'injectable' can only decorate classes not: ${context.kind}`);
   }
 
-  container.register(target, new target(), ClassType.Service);
+  const instance = new target();
+
+  if (clientInstanceFieldName in instance) {
+    Object.defineProperty(instance, instance[clientInstanceFieldName], {
+      get: function () {
+        return container.client;
+      },
+      configurable: false,
+    });
+  }
+
+  container.register(target, instance, ClassType.Service);
 }
