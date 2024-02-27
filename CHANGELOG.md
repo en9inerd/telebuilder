@@ -1,3 +1,11 @@
+## [0.7.8](https://github.com/en9inerd/telebuilder/compare/v0.7.7...v0.7.8) (2024-02-27)
+
+
+### Bug Fixes
+
+* if config option is undefined then try to get default value ([e4a8043](https://github.com/en9inerd/telebuilder/commit/e4a804391746d9fcac1c7d25944d04467c97b658))
+* inject client into service ([31760ca](https://github.com/en9inerd/telebuilder/commit/31760ca51f753046cbd1ee9263f42b857846f020))
+
 ## [0.7.7](https://github.com/en9inerd/telebuilder/compare/v0.7.6...v0.7.7) (2024-02-24)
 
 
