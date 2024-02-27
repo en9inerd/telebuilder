@@ -128,6 +128,12 @@ export class ConfigService {
           return defaultValue;
         }
         throw new ConfigException(`Config key "${key}" not found`);
+      } else {
+        if (config[k] === null || config[k] === undefined) {
+          if (defaultValue !== undefined) {
+            return defaultValue;
+          }
+        }
       }
       config = config[k];
     }
