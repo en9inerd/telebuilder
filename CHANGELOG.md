@@ -1,3 +1,10 @@
+## [0.7.9](https://github.com/en9inerd/telebuilder/compare/v0.7.8...v0.7.9) (2024-03-30)
+
+
+### Bug Fixes
+
+* update gramjs ([ce4995c](https://github.com/en9inerd/telebuilder/commit/ce4995c88564f3e91f1ffadd1a07c544f365c353))
+
 ## [0.7.8](https://github.com/en9inerd/telebuilder/compare/v0.7.7...v0.7.8) (2024-02-27)
 
 
