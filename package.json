@@ -79,7 +79,7 @@
     "store2": "^2.14.3"
   },
   "peerDependencies": {
-    "telegram": "^2.19.20"
+    "telegram": "^2.20.2"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.2.1",
