@@ -1,0 +1,28 @@
+export default {
+  parser: '@typescript-eslint/parser',
+  plugins: ['@typescript-eslint'],
+  extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended'],
+  parserOptions: {
+    ecmaVersion: 2022,
+    sourceType: 'module',
+  },
+  env: {
+    browser: false,
+    node: true,
+    es6: true,
+  },
+  rules: {
+    quotes: 'off',
+    '@typescript-eslint/quotes': [
+      'error',
+      'single',
+      {
+        avoidEscape: true,
+        allowTemplateLiterals: true,
+      },
+    ],
+    semi: 'off',
+    '@typescript-eslint/semi': 'error',
+    'no-constant-condition': 'off',
+  },
+};
