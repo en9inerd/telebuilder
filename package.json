@@ -1,6 +1,6 @@
 {
   "name": "telebuilder",
-  "version": "0.7.9",
+  "version": "0.7.10",
   "description": "Simple telegram bot framework based on gramjs",
   "type": "module",
   "exports": {
