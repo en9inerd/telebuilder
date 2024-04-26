@@ -1,3 +1,10 @@
+## [0.7.11](https://github.com/en9inerd/telebuilder/compare/v0.7.10...v0.7.11) (2024-04-26)
+
+
+### Bug Fixes
+
+* use biome for linting ([070fab6](https://github.com/en9inerd/telebuilder/commit/070fab6ca566c2fd4bad47ca459fbe8821cdc322))
+
 ## [0.7.10](https://github.com/en9inerd/telebuilder/compare/v0.7.9...v0.7.10) (2024-04-22)
 
 
