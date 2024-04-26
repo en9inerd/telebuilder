@@ -1,23 +1,23 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { access } from 'fs/promises';
-import { fileURLToPath } from 'url';
-import { join, dirname } from 'path';
+import { access } from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
+import { join, dirname } from 'node:path';
 import { ConfigException } from '../exceptions.js';
 import { configInstance } from '../keys.js';
 
 export class ConfigService {
   private rootAppDir = '';
+  // biome-ignore lint/suspicious/noExplicitAny: really any type
   private config: any = {};
   private isConfigLoaded = false;
   private static [configInstance]: ConfigService;
 
   public static get instance(): Promise<ConfigService> {
     return (async () => {
-      if (!this[configInstance]) {
-        this[configInstance] = new ConfigService();
-        await this[configInstance].init();
+      if (!ConfigService[configInstance]) {
+        ConfigService[configInstance] = new ConfigService();
+        await ConfigService[configInstance].init();
       }
-      return this[configInstance];
+      return ConfigService[configInstance];
     }
     )();
   }
@@ -55,6 +55,7 @@ export class ConfigService {
     }
   }
 
+  // biome-ignore lint/suspicious/noExplicitAny: really any type
   private mergeConfigs(defaultConfig: any, overrideConfig: any) {
     const mergedConfig = { ...defaultConfig };
 
@@ -114,7 +115,7 @@ export class ConfigService {
     }
   }
 
-  get<T>(key: string = '', defaultValue?: T): T {
+  get<T>(key = '', defaultValue?: T): T {
     if (!key) {
       return this.config;
     }

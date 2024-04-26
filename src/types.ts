@@ -1,12 +1,12 @@
-import { Api, Logger } from 'telegram';
-import { NewMessageEvent } from 'telegram/events';
-import { commandScopeMap, handlerKeys } from './keys.js';
-import { NewMessageInterface } from 'telegram/events/NewMessage.js';
-import { NewCallbackQueryInterface } from 'telegram/events/CallbackQuery.js';
-import { DefaultEventInterface } from 'telegram/events/common.js';
-import { EditedMessageInterface } from 'telegram/events/EditedMessage.js';
-import { RawInterface } from 'telegram/events/Raw.js';
-import { BaseDBService } from './services/index.js';
+import type { Api, Logger } from 'telegram';
+import type { NewMessageEvent } from 'telegram/events';
+import type { commandScopeMap, handlerKeys } from './keys.js';
+import type { NewMessageInterface } from 'telegram/events/NewMessage.js';
+import type { NewCallbackQueryInterface } from 'telegram/events/CallbackQuery.js';
+import type { DefaultEventInterface } from 'telegram/events/common.js';
+import type { EditedMessageInterface } from 'telegram/events/EditedMessage.js';
+import type { RawInterface } from 'telegram/events/Raw.js';
+import type { BaseDBService } from './services/index.js';
 
 export type Dict<T = unknown> = Record<string, T>;
 
@@ -65,7 +65,7 @@ export type CommandScope =
 
 export type Buttons = Api.KeyboardButtonCallback[][];
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// biome-ignore lint/suspicious/noExplicitAny: really any type
 export type Constructor<T> = new (...args: any[]) => T;
 
 export type HandlerType = keyof typeof handlerKeys;

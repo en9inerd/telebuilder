@@ -1,7 +1,7 @@
 import { TelegramClientException } from '../exceptions.js';
 import { input } from '../helpers/input.helper.js';
 import { Store } from '../helpers/store.helper.js';
-import { ClientParams } from '../types.js';
+import type { ClientParams } from '../types.js';
 import { formatErrorMessage } from '../utils.js';
 import { TelegramBotClient } from './bot.client.js';
 

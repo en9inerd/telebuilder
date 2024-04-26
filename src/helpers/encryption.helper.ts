@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 
 const keyLength = 32;
 
@@ -12,7 +12,7 @@ export function encrypt(text: string, key: string): string {
   let encrypted = cipher.update(text);
 
   encrypted = Buffer.concat([encrypted, cipher.final()]);
-  return iv + ':' + encrypted.toString('hex');
+  return `${iv}:${encrypted.toString('hex')}`;
 }
 
 export function decrypt(text: string, key: string): string {

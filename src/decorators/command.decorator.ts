@@ -1,9 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { DecoratorException } from '../exceptions.js';
 import { ClassType, clientInstanceFieldName } from '../keys.js';
 import { container } from '../states/container.js';
-import { Command, Constructor } from '../types.js';
+import type { Command, Constructor } from '../types.js';
 
+// biome-ignore lint/suspicious/noExplicitAny: really any type
 export function command<Class extends Constructor<any>>(
   target: Class,
   context: ClassDecoratorContext<Class>

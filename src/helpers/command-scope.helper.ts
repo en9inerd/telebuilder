@@ -1,4 +1,4 @@
-import { Command, CommandScope, CommandScopeNames, GroupedCommandScopes } from '../types.js';
+import type { Command, CommandScope, CommandScopeNames, GroupedCommandScopes } from '../types.js';
 
 export function convertScopeStrToObject(scopeStr: string): CommandScope {
   return scopeStr.split(':').reduce((map, s) => {
@@ -12,9 +12,7 @@ export function groupCommandsByScope(commands: Command[]): GroupedCommandScopes 
   return commands.reduce((map, c) => {
     for (const scope of c.scopes) {
       const scopeStr =
-        `name=${scope.name}` +
-        ('peer' in scope ? `:peer=${scope.peer}` : '') +
-        ('userId' in scope ? `:userId=${scope.userId}` : '');
+        `name=${scope.name}${'peer' in scope ? `:peer=${scope.peer}` : ''}${'userId' in scope ? `:userId=${scope.userId}` : ''}`;
 
       if (!(scopeStr in map)) map[scopeStr] = {};
 

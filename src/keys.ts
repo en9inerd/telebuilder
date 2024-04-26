@@ -27,6 +27,6 @@ export const clientInstanceFieldName = Symbol('clientInstanceFieldName');
 export const commandParamsSchema = Symbol('commandParamsSchema');
 
 export enum ClassType {
-  Service,
-  Command,
+  Service = 0,
+  Command = 1,
 }

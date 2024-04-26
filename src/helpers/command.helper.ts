@@ -1,6 +1,6 @@
-import { Api } from 'telegram';
-import { SendMessageParams } from 'telegram/client/messages.js';
-import { NewMessage, NewMessageEvent } from 'telegram/events/index.js';
+import type { Api } from 'telegram';
+import type { SendMessageParams } from 'telegram/client/messages.js';
+import { NewMessage, type NewMessageEvent } from 'telegram/events/index.js';
 import { HelperException } from '../exceptions.js';
 import { getClient, userState } from '../states/index.js';
 import { formatErrorMessage } from '../utils.js';

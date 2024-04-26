@@ -1,9 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { NewMessageEvent } from 'telegram/events/NewMessage.js';
+import type { NewMessageEvent } from 'telegram/events/NewMessage.js';
 import { DecoratorException } from '../exceptions.js';
 import { commandParamsSchema } from '../keys.js';
-import { CommandParamsSchema, MessageWithParams, ValidatedCommandParams } from '../types.js';
+import type { CommandParamsSchema, MessageWithParams, ValidatedCommandParams } from '../types.js';
 
+// biome-ignore lint/suspicious/noExplicitAny: really any type
 export function paramsValidation<This, Args extends any[], Return>(
   target: (this: This, ...args: Args) => Return,
   context: ClassMethodDecoratorContext<This, (this: This, ...args: Args) => Return>
@@ -12,7 +12,7 @@ export function paramsValidation<This, Args extends any[], Return>(
     throw new DecoratorException(`'paramsValidation' can only decorate methods not: ${context.kind}`);
   }
 
-  async function replacementMethod(this: This, ...args: Args): Promise<void | Awaited<Return>> {
+  async function replacementMethod(this: This, ...args: Args): Promise<undefined | Awaited<Return>> {
     const event: NewMessageEvent = args[0];
     if (event?.originalUpdate?.className !== 'UpdateNewMessage') return;
 

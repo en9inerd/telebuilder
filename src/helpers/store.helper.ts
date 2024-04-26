@@ -1,5 +1,5 @@
 import { LocalStorage } from 'node-localstorage';
-import store, { StoreAPI } from 'store2';
+import store, { type StoreAPI } from 'store2';
 import { config } from '../config.js';
 
 function getStore(dirPath: string): StoreAPI {

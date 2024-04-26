@@ -1,4 +1,4 @@
-import { Dict } from '../types.js';
+import type { Dict } from '../types.js';
 
 export class BaseState {
   private _state: Map<string, Dict> = new Map();

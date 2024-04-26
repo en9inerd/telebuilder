@@ -1,6 +1,6 @@
 import { DecoratorException } from '../exceptions.js';
 import { handlerKeys } from '../keys.js';
-import { Buttons, ExtendedCommand } from '../types.js';
+import type { Buttons, ExtendedCommand } from '../types.js';
 
 export function buttonsReg<This, Return extends Buttons>(
   target: undefined,

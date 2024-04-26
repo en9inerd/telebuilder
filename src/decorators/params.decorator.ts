@@ -1,6 +1,6 @@
 import { DecoratorException } from '../exceptions.js';
 import { commandParamsSchema } from '../keys.js';
-import { CommandParamsSchema } from '../types.js';
+import type { CommandParamsSchema } from '../types.js';
 
 export function params<This, Return extends CommandParamsSchema>(
   target: undefined,
@@ -17,7 +17,7 @@ export function params<This, Return extends CommandParamsSchema>(
       throw new DecoratorException(`field '${methodName}' of '${(<Record<string, string>>this)?.constructor?.name}' class can't be empty object or undefined`);
     }
 
-    Object.values(initialValue).forEach((param) => {
+    for (const param of Object.values(initialValue)) {
       if (!param.type || !['string', 'number', 'boolean', 'enum'].includes(param.type)) {
         throw new DecoratorException(`field '${methodName}' of '${(<Record<string, string>>this)?.constructor?.name}' class has unsupported type: ${param.type}`);
       }
@@ -25,7 +25,7 @@ export function params<This, Return extends CommandParamsSchema>(
       if (param.type === 'enum' && !param.enumValues) {
         throw new DecoratorException(`field '${methodName}' of '${(<Record<string, string>>this)?.constructor?.name}' class has enum type but no enumValues`);
       }
-    });
+    }
 
     if (!(<Record<symbol, CommandParamsSchema>>this)[commandParamsSchema]) {
       (<Record<symbol, CommandParamsSchema>>this)[commandParamsSchema] = initialValue;

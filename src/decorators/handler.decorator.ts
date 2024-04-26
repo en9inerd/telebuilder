@@ -1,10 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { DecoratorException } from '../exceptions.js';
 import { handlerKeys } from '../keys.js';
-import { EventInterface, ExtendedCommand, HandlerDecoratorParams, HandlerTypes } from '../types.js';
+import { type EventInterface, type ExtendedCommand, type HandlerDecoratorParams, HandlerTypes } from '../types.js';
 import { bound, locked } from './bound-and-locked.decorator.js';
 import { paramsValidation } from './params-validation.js';
 
+// biome-ignore lint/suspicious/noExplicitAny: really any type
 export function handler<This, Args extends any[], Return>(params: HandlerDecoratorParams = {}) {
   return function (
     target: (this: This, ...args: Args) => Return,

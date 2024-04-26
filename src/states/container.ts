@@ -1,10 +1,10 @@
 import { StateException } from '../exceptions.js';
 import { ClassType, clientInstance } from '../keys.js';
-import { Constructor } from '../types.js';
-import { TelegramClient } from 'telegram';
+import type { Constructor } from '../types.js';
+import type { TelegramClient } from 'telegram';
 
 class Container {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // biome-ignore lint/suspicious/noExplicitAny: really any type
   private instances: Map<ClassType, Map<Constructor<any>, any>> = new Map([
     [ClassType.Service, new Map()],
     [ClassType.Command, new Map()]

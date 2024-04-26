@@ -1,6 +1,7 @@
 import { DecoratorException } from "../exceptions.js";
 import { userState } from "../states/index.js";
 
+// biome-ignore lint/suspicious/noExplicitAny: really any type
 export function catchError<This, Args extends any[], Return>(
   callback?: (error: Error) => Promise<void>
 ) {
@@ -12,7 +13,7 @@ export function catchError<This, Args extends any[], Return>(
       throw new DecoratorException(`'catchError' can only decorate methods not: ${context.kind}`);
     }
 
-    async function replacementMethod(this: This, ...args: Args): Promise<void | Awaited<Return>> {
+    async function replacementMethod(this: This, ...args: Args): Promise<undefined | Awaited<Return>> {
       try {
         return await target.apply(this, args);
       } catch (e) {

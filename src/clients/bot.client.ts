@@ -1,23 +1,24 @@
 import { Api, TelegramClient } from 'telegram';
 import { CustomFile } from 'telegram/client/uploads.js';
 import { Album } from 'telegram/events/Album.js';
-import { CallbackQuery, NewCallbackQueryInterface } from 'telegram/events/CallbackQuery.js';
+import { CallbackQuery, type NewCallbackQueryInterface } from 'telegram/events/CallbackQuery.js';
 import { DeletedMessage } from 'telegram/events/DeletedMessage.js';
-import { EditedMessage, EditedMessageInterface } from 'telegram/events/EditedMessage.js';
-import { NewMessageInterface } from 'telegram/events/NewMessage.js';
-import { RawInterface } from 'telegram/events/Raw.js';
-import { DefaultEventInterface } from 'telegram/events/common.js';
+import { EditedMessage, type EditedMessageInterface } from 'telegram/events/EditedMessage.js';
+import type { NewMessageInterface } from 'telegram/events/NewMessage.js';
+import type { RawInterface } from 'telegram/events/Raw.js';
+import type { DefaultEventInterface } from 'telegram/events/common.js';
 import { NewMessage, Raw } from 'telegram/events/index.js';
 import { StringSession } from 'telegram/sessions/index.js';
 import { config } from '../config.js';
+import { eventManager } from '../event-manager.js';
 import { TelegramClientException } from '../exceptions.js';
 import { CSHelper } from '../helpers/command-scope.helper.js';
 import { Store } from '../helpers/store.helper.js';
 import { ClassType, commandScopeMap, handlerKeys } from '../keys.js';
-import { BaseDBService } from '../services/index.js';
+import type { BaseDBService } from '../services/index.js';
 import { container } from '../states/container.js';
-import { ClientParams, Command, CommandHandler, CommandScope, EntryHandler, EventInterface, ExtendedCommand, GroupedCommandScopes, HandlerType, HandlerTypes } from '../types.js';
-import { eventManager } from '../event-manager.js';
+import type { ClientParams, Command, CommandHandler, CommandScope, EntryHandler, EventInterface, ExtendedCommand, GroupedCommandScopes, HandlerType } from '../types.js';
+import { HandlerTypes } from '../types.js';
 
 export class TelegramBotClient extends TelegramClient {
   private readonly commands: Command[] = [];
@@ -36,7 +37,7 @@ export class TelegramBotClient extends TelegramClient {
       config.get('botConfig.apiHash'),
       {
         baseLogger: params?.baseLogger,
-        connectionRetries: config.get('botConfig.connectionRetries', Infinity),
+        connectionRetries: config.get('botConfig.connectionRetries', Number.POSITIVE_INFINITY),
         deviceModel: config.get<string>('botConfig.deviceModel', ''),
         appVersion: config.get('botConfig.appVersion'),
         systemVersion: config.get<string>('botConfig.systemVersion', ''),
@@ -266,7 +267,7 @@ export class TelegramBotClient extends TelegramClient {
       const extension = response.headers.get('content-type')?.split('/')[1];
       const buffer = Buffer.from(await response.arrayBuffer());
       const file = new CustomFile(
-        'profile_photo.' + extension,
+        `profile_photo.${extension}`,
         buffer.byteLength,
         '',
         buffer

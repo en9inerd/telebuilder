@@ -1,7 +1,7 @@
 import { DecoratorException } from '../exceptions.js';
 import { ClassType } from '../keys.js';
 import { container } from '../states/container.js';
-import { Constructor } from '../types.js';
+import type { Constructor } from '../types.js';
 
 export function inject<This, Return>(
   serviceIdentifier: Constructor<Return>

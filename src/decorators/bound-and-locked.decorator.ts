@@ -1,7 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { DecoratorException } from '../exceptions.js';
 import { userState } from '../states/index.js';
 
+// biome-ignore lint/suspicious/noExplicitAny: really any type
 export function locked<This, Args extends any[], Return>(
   target: (this: This, ...args: Args) => Return,
   context: ClassMethodDecoratorContext<This, (this: This, ...args: Args) => Return>
@@ -10,7 +10,7 @@ export function locked<This, Args extends any[], Return>(
     throw new DecoratorException(`'locked' can only decorate methods not: ${context.kind}`);
   }
 
-  async function replacementMethod(this: This, ...args: Args): Promise<void | Awaited<Return>> {
+  async function replacementMethod(this: This, ...args: Args): Promise<unknown | Awaited<Return>> {
     const senderId = String(args[0]?.message?.senderId || args[0]?.senderId || '');
     const lockCondition = args.length === 1 && senderId;
     if (lockCondition) {
@@ -23,10 +23,10 @@ export function locked<This, Args extends any[], Return>(
     }
 
     // execute the method
-    let result;
+    let result: unknown;
     try {
       result = await target.apply(this, args);
-    } catch (err: any) {
+    } catch (err: unknown) {
       userState.deleteStateProperty(senderId, 'commandLock');
       console.error(err);
     }
@@ -42,6 +42,7 @@ export function locked<This, Args extends any[], Return>(
   return replacementMethod;
 }
 
+// biome-ignore lint/suspicious/noExplicitAny: really any type
 export function bound<This, Args extends any[], Return>(
   target: (this: This, ...args: Args) => Return,
   context: ClassMethodDecoratorContext<This, (this: This, ...args: Args) => Return>

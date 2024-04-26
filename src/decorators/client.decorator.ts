@@ -1,4 +1,4 @@
-import { TelegramClient } from 'telegram';
+import type { TelegramClient } from 'telegram';
 import { DecoratorException } from '../exceptions.js';
 import { clientInstanceFieldName } from '../keys.js';
 
