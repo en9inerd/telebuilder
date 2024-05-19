@@ -46,7 +46,7 @@
     }
   },
   "scripts": {
-    "lint": "biome .",
+    "lint": "biome lint .",
     "build": "tsc --build",
     "clean": "tsc --build --clean",
     "build:watch": "tsc --build --watch",
