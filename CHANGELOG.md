@@ -1,3 +1,11 @@
+## [0.7.12](https://github.com/en9inerd/telebuilder/compare/v0.7.11...v0.7.12) (2024-08-12)
+
+
+### Bug Fixes
+
+* type passing when set state ([b28291a](https://github.com/en9inerd/telebuilder/commit/b28291a55e44148d4e781f487325f2929b0b82b8))
+* update dependencies ([e3041f4](https://github.com/en9inerd/telebuilder/commit/e3041f472b497c1139a059d5fbc19d7cdc9d2480))
+
 ## [0.7.11](https://github.com/en9inerd/telebuilder/compare/v0.7.10...v0.7.11) (2024-04-26)
 
 
