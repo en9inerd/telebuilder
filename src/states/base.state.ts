@@ -7,7 +7,7 @@ export class BaseState {
     return <T>(this._state.get(stateId)?.[key]);
   }
 
-  public set(stateId: string, key: string, value: unknown): void {
+  public set<T>(stateId: string, key: string, value: T): void {
     this._state.set(stateId, {
       ...this._state.get(stateId),
       [key]: value
