@@ -1,3 +1,10 @@
+## [0.7.13](https://github.com/en9inerd/telebuilder/compare/v0.7.12...v0.7.13) (2024-08-25)
+
+
+### Bug Fixes
+
+* update dependencies ([550894b](https://github.com/en9inerd/telebuilder/commit/550894bb01bce7bc1aa860a44b3df5a318689271))
+
 ## [0.7.12](https://github.com/en9inerd/telebuilder/compare/v0.7.11...v0.7.12) (2024-08-12)
 
 
