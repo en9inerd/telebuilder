@@ -2,14 +2,14 @@
 
 [![npm version](https://badge.fury.io/js/telebuilder.svg)](https://badge.fury.io/js/telebuilder)
 
-TeleBuilder is a simple Telegram bot framework for building command message-centric Telegram bots in TypeScript/JavaScript. It's built on top of GramJS. This allows you to build bots and userbots with more features and fewer limitations than using frameworks based on Telegram Bot API.
+TeleBuilder is a simple Telegram bot framework for building command message-centric Telegram bots in TypeScript/JavaScript. It's built on top of GramJS, allowing you to create bots and userbots with more features and fewer limitations than using frameworks based on Telegram Bot API.
 
 **Note**: TeleBuilder is still in early development and is primarily used for personal bot projects. Please report any bugs or suggest improvements.
 
 ## Features
 
 - **Command-Centric Design**: Define and manage bot commands easily with a clear and concise interface.
-- **Command Locking**: Prevent a command from running multiple times simultaneously for the same user.
+- **Command Locking**: Prevent a command from running while another command is in progress.
 - **Easily Configurable Command Scopes**: Limit command execution to specific users, chats, or peers.
 - **Command Config Caching**: Store current command configuration on disk for updates and restarts.
 - **Lightweight configuration management**: Load and manage configuration settings for your bot like node-config.
@@ -179,12 +179,116 @@ Here is an example of how to define parameters for a command:
 
 ### Button Menus
 
+TeleBuilder allows you to define interactive button menus using the @buttonsReg decorator.
+
+#### Defining Button Menus
+
+To create button menus within a command class:
+
+1. **Define Button Fields**: Add class fields representing button layouts using `Buttons` type. Each button is typically created with `Button.inline`, specifying the display text and callback data.
+2. **Apply the `@buttonsReg` Decorator**: Decorate these fields with `@buttonsReg`. This decorator performs validation and preprocessing to ensure that each button's callback data is correctly linked to a handler method within the class.
+
+#### How `@buttonsReg` Works
+
+The `@buttonsReg` decorator performs the following actions:
+
+- **Validation**: It checks that each button's callback data corresponds to an existing callback query handler method in the class. If a matching handler is not found, it throws a `DecoratorException`.
+- **Data Prefixing**: It prefixes the callback data of each button with the class name followed by a colon (`:`). This namespacing helps avoid conflicts between handlers in different classes.
+- **Handler Linking**: Ensures that the prefixed callback data matches the handler methods, facilitating correct event routing.
+
+#### Implementing Button Menus in a command class
+
+Here’s a brief example:
+
+```typescript
+@command
+export class SessionCommand implements Command {
+  @buttonsReg woSessionButtons: Buttons = [
+    [Button.inline('Create session', Buffer.from('createSession'))]
+  ];
+
+  @handler({ type: HandlerTypes.CallbackQuery })
+  public async createSession(event: CallbackQueryEvent) {
+    // Handler implementation...
+  }
+}
+```
+
+Full example of a command class with button: [session.command.ts](https://raw.githubusercontent.com/en9inerd/gromozeka-bot/master/src/commands/session.command.ts)
+
+#### Key Points to Remember
+
+- **Callback Data Consistency**: The callback data specified in `Button.inline` (e.g., `'createSession'`) must exactly match the corresponding handler method name (`createSession`) in the class. The `@buttonsReg` decorator prefixes the callback data with the class name, so ensure handler methods are correctly named without the prefix.
+- **Decorator Responsibilities**: The `@buttonsReg` decorator ensures that:
+  - Every button has a corresponding handler method.
+  - Callback data is appropriately namespaced to prevent conflicts.
+  - Any mismatch between buttons and handlers results in a clear exception, aiding in debugging.
+- **Error Handling**: If a button's callback data does not match any handler method within the class, a `DecoratorException` is thrown, indicating the specific issue for easy resolution.
+
 ### Dependency Injection
+
+TeleBuilder provides a straightforward way to manage dependencies through the use of the `@injectable` and `@inject` decorators. This system ensures that services are automatically registered and resolved within the framework’s internal container.
+
+- `@injectable`: Marks a class as a service that can be injected.
+- `@inject`: Injects the dependency into a class where it is needed.
+
+Here’s an example of how to set this up:
+
+```typescript
+@injectable
+export class MyService {
+  public doSomething(): void {
+    console.log('Service is doing something.');
+  }
+}
+
+export class MyComponent {
+  @inject(MyService)
+  private readonly myService!: MyService;
+
+  public performAction(): void {
+    this.myService.doSomething();
+  }
+}
+```
 
 ### Error Handling
 
+TeleBuilder includes a `@catchError` decorator to help manage errors in your event handlers gracefully. By using this decorator, you can define a custom error handler that will be invoked if an error occurs during the execution of the handler.
+
+Example of error handling in a command handler:
+
+```typescript
+@catchError(async (error) => {
+  // Custom error handling logic...
+  console.error('Custom Error:', error.message);
+})
+public async myMethod() {
+  // Method logic that might throw an error...
+}
+```
+
 ### Access to Client object
+
+You can access the underlying `TelegramClient` instance provided by GramJS using the `@client` decorator or the `getClient()` function from `telebuilder/states`.
+
+This is useful when you need to perform operations that require direct access to the Telegram client, such as sending messages, handling events, and interacting with the Telegram API.
+
+```typescript
+@client
+private readonly client!: TelegramClient;
+
+//or
+
+import { getClient } from 'telebuilder/states';
+
+const client = getClient();
+```
 
 ## License
 
+TeleBuilder is licensed under the MIT License. See [LICENSE](./LICENSE) for more information.
+
 ## Contributing
+
+If you have any suggestions or improvements, feel free to open an issue or submit a pull request.
