@@ -28,6 +28,13 @@ export function paramsValidation<This, Args extends any[], Return>(
       }, {} as Record<string, string>);
 
       let errorMsg = '';
+
+      for (const key in parsedParams) {
+        if (!(key in schema)) {
+          errorMsg += `Param "${key}" doesn't exist.\n`;
+        }
+      }
+
       const validatedParams = Object.entries(schema).reduce((acc, [key, value]) => {
         if (value.required && !(key in parsedParams)) {
           errorMsg += `Param "${key}" is required.\n`;
