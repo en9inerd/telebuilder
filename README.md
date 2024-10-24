@@ -22,7 +22,7 @@ npm install telebuilder
 
 ## Usage
 
-Example of a bot built with TeleBuilder: [jekyll-post-bot](https://github.com/en9inerd/jekyll-post-bot)
+Example of a bot built with TeleBuilder: [zola-post-bot](https://github.com/en9inerd/zola-post-bot)
 
 ### Configuration
 
