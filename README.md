@@ -1,5 +1,7 @@
 # TeleBuilder
 
+> **Note**: This repository has been archived. The underlying [GramJS](https://github.com/gram-js/gramjs) library is no longer actively maintained, so this project won't receive further updates. If you're looking for a replacement, check out [TeleKit](https://github.com/en9inerd/telekit) — a similar project written in Go.
+
 [![npm version](https://badge.fury.io/js/telebuilder.svg)](https://badge.fury.io/js/telebuilder)
 
 TeleBuilder is a simple Telegram bot framework for building command message-centric Telegram bots in TypeScript/JavaScript. It's built on top of GramJS, allowing you to create bots and userbots with more features and fewer limitations than using frameworks based on Telegram Bot API.
